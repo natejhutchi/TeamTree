@@ -1,0 +1,7 @@
+TeamTownTree Prompts
+
+
+okay so how does this work, we have the default tree hardcoded in the repo, but we also have custom trees and edited trees within the app.. how do we save custom trees? what are they saved as? how do we ensure they stick to the app for all users... supabase? and if so, how would they be saved in supabase? considering layout and content.. what kind of file is one of these tree files?
+
+create the main login page.. simple TeamTownTree (use the logo we have in app in the top bar) with google auth for log in... should i set up the supabase first? do i need to get this online in vercel?
+
