@@ -1,0 +1,208 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(238, 247, 223, 0.9), transparent 34%),
+    linear-gradient(135deg, #dce8cf 0%, #cfe0bd 100%);
+}
+
+.login-panel {
+  position: relative;
+  width: min(390px, calc(100vw - 40px));
+  padding: 34px;
+  border: 1px solid rgba(120, 146, 102, 0.72);
+  border-radius: 22px;
+  background: #b7d59b;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -1px 0 rgba(66, 96, 52, 0.16),
+    0 24px 70px rgba(36, 55, 30, 0.18);
+  color: var(--color-ink);
+}
+
+.login-brand {
+  text-align: center;
+  margin: 0 0 10px;
+  color: #2f4f2e;
+  font-family: var(--font-logo);
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  line-height: 0.72;
+  letter-spacing: 0;
+}
+
+.login-brand span {
+  display: block;
+}
+
+.login-tree-logo {
+  display: block;
+  width: min(170px, 52%);
+  height: auto;
+  margin: 18px auto 26px;
+}
+
+.login-google-button {
+  width: min(340px, 100%);
+  margin: 0 auto;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(45, 88, 38, 0.58);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #3b6635 0%, #2d5029 100%);
+  color: #f1f8e9;
+  font-weight: 800;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.14),
+    0 10px 22px rgba(36, 55, 30, 0.18);
+  cursor: pointer;
+}
+
+.login-google-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.login-error {
+  margin: 16px 0 0;
+  color: #7b251f;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.login-error code {
+  font-family: inherit;
+  font-weight: 900;
+}
+
+.login-access-denied {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 68px);
+  margin: 0;
+  color: #2f4f2e;
+  font-size: 1.12rem;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  pointer-events: none;
+  animation: accessDeniedFade 5.5s ease forwards;
+}
+
+@keyframes accessDeniedFade {
+  0%, 24% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.login-rejection {
+  display: grid;
+  gap: 14px;
+  text-align: center;
+}
+
+.login-rejection h1 {
+  margin: 0;
+  color: #2d4429;
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.login-rejection p {
+  margin: 0 0 4px;
+  color: #42563d;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.logout-panel {
+  width: min(390px, calc(100vw - 48px));
+  height: auto;
+  min-height: 0;
+  grid-template-rows: auto auto auto auto;
+  gap: 16px;
+  padding: 18px;
+  transform-origin: top center;
+  animation-name: account-open-from-profile;
+}
+
+.logout-panel.is-closing {
+  animation-name: account-close-to-profile;
+}
+
+.logout-identity,
+.logout-username-card {
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+  border: 1px solid rgba(86, 111, 75, 0.22);
+  border-radius: 12px;
+  background: rgba(219, 239, 204, 0.42);
+}
+
+.logout-identity p,
+.logout-username-card h3 {
+  margin: 0;
+  color: var(--color-muted);
+  font-weight: 800;
+}
+
+.logout-username-card h3 {
+  color: var(--color-ink);
+  font-size: 0.95rem;
+}
+
+.logout-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logout-name-input {
+  width: 160px;
+  text-align: left;
+}
+
+.logout-set-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.logout-set-button:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.logout-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+}
+
+.logout-text-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.logout-confirm-button {
+  min-width: 92px;
+}

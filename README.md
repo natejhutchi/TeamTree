@@ -1,25 +1,18 @@
-# TeamTownTree
+# TeamTree
 
 A simple single-page dialogue tree app. Every block is rendered at once, and buttons jump to other blocks on the same page with hash links.
 
 ## Edit the tree
 
-Update `src/dialogueTree.ts`.
+Edit `src/dialogueTree.ts` to add, remove, or rearrange blocks. Each block has:
 
-```ts
-{
-  id: "start",
-  title: "Opening Block",
-  body: ["Dialogue line one.", "Dialogue line two."],
-  buttons: [
-    { label: "Choose this", target: "next-block" },
-  ],
-}
-```
+- `id`: stable page anchor, used by buttons.
+- `title`: block heading.
+- `lines`: text lines, with optional bold labels.
+- `buttons`: links to other block ids.
+- `position`: explicit canvas placement.
 
-Each `target` must match another block's `id`. The app displays a warning if a button points to a missing block.
-
-## Run
+## Run locally
 
 ```bash
 npm install

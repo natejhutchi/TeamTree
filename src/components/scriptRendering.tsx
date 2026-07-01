@@ -1,7 +1,7 @@
 import type React from "react";
 import type { ScriptContent, ScriptLine, TextPart } from "../dialogueTree";
 
-export type NavigateToBlock = (id: string, options?: { trackHistory?: boolean; updateHash?: boolean }) => void;
+export type NavigateToBlock = (id: string, options?: { trackHistory?: boolean }) => void;
 export type NameValues = { prospectName: string; repName: string };
 
 type SelectTextHandler = (textKey: string | null) => void;
@@ -36,8 +36,10 @@ function resolveNameToken(label: string, value: string, tokenIndex: number, name
 
 function renderTextWithNameTokens(value: string, keyPrefix: number, names: NameValues) {
   let tokenCount = 0;
+  const prospectName = names.prospectName.trim();
+  const repName = names.repName.trim();
 
-  return value.split(/(\[\[(?:Your\s+|Prospect\s+|Full\s+)?Name\]\]|\[\[(?:Prospect|Rep)\]\])/gi).map((part, tokenIndex) => {
+  return value.split(/(\[\[(?:Your\s+|Prospect\s+|Full\s+)?Name\]\]|\[\[(?:Prospect|Rep)\]\]|\bPP\b|\bRR\b)/gi).map((part, tokenIndex) => {
     const match = part.match(/^\[\[(.*?)\]\]$/);
 
     if (match && /(name|prospect|rep)/i.test(match[1])) {
@@ -49,6 +51,14 @@ function renderTextWithNameTokens(value: string, keyPrefix: number, names: NameV
           {resolvedName}
         </em>
       );
+    }
+
+    if (part === "PP" && prospectName) {
+      return <span key={`${keyPrefix}-pp-${tokenIndex}`}>{prospectName}</span>;
+    }
+
+    if (part === "RR" && repName) {
+      return <span key={`${keyPrefix}-rr-${tokenIndex}`}>{repName}</span>;
     }
 
     return <span key={`${keyPrefix}-text-${tokenIndex}`}>{part}</span>;
@@ -94,17 +104,14 @@ function ScriptPart({
     return (
       <a
         className={`inline-link ${part.tone ? `inline-link-${part.tone}` : ""}`}
-        href={`#${part.target}`}
+        data-target-block-id={part.target}
+        href=""
         key={index}
         onClick={(event) => {
           event.preventDefault();
 
           if (isEditMode) {
             event.stopPropagation();
-            return;
-          }
-
-          if (!isBlockSelected) {
             return;
           }
 

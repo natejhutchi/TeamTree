@@ -1,75 +1,67 @@
-import { StrictMode, useRef, useState, type CSSProperties } from "react";
+import { StrictMode, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 import { TreeModal } from "./components/TreeModal";
 import { DialogueCard } from "./components/DialogueCard";
 import { InfoPanels } from "./components/InfoPanels";
 import { LoginPage } from "./components/LoginPage";
-import { NotepadModal } from "./components/NotepadModal";
+import { LogoutModal } from "./components/LogoutModal";
 import { TopBar } from "./components/TopBar";
 import { TreeBoard } from "./components/TreeBoard";
 import { useTreeData } from "./components/useTreeData";
 import { useCanvasNavigation } from "./components/useCanvasNavigation";
 import { useCanvasViewport } from "./components/useCanvasViewport";
 import { ViewportControls } from "./components/ViewportControls";
+import { useModalTransition } from "./components/useModalTransition";
 import {
   type DialogueBlock,
-  dialogueBlocks,
   getMissingTargets,
   objectionResponses,
   teamInfoResponses,
 } from "./dialogueTree";
 import { useEditMode } from "./editing/useEditMode";
-import { useClosedCallAuth, type CompanyMembership } from "./auth/useClosedCallAuth";
+import { defaultAnnouncements } from "./defaultAnnouncements";
+import { useTeamTownAuth, type TeamMembership } from "./auth/useTeamTownAuth";
 import "./styles.css";
 
-function getBlock(id: string) {
-  const block = dialogueBlocks.find((item) => item.id === id);
-
-  if (!block) {
-    throw new Error(`Missing dialogue block: ${id}`);
-  }
-
-  return block;
-}
-
 type ActiveOverlay = "top" | "team" | "bottom" | "objections";
-const defaultAnnouncements = [
-  "Welcome to TeamTownTree, where you'll grow from a calling seed into a fruitful caller.",
-  "Every reply from the prospect has a finite number of responses. You'll see them on the current block, just click the right one and see your next line before the prospects even done speaking. You'll be ready.",
-  "Practice your delivery without the guess work and learn the lingo as you go, when you get really good, you'll start freestyling your own vibe.",
-  "Remember: you are an actor. The character you're playing? Yourself. Deliver the lines naturally with enthusiasm.",
-  "Click the tree icon to switch trees or create a new one. Use the edit button to customize your tree. You can only edit your own trees.",
-  "If things get hot, you can eject at any time with a polite goodbye, but don't be afraid to push the next line.",
-  "You got this, you're going to grow so fast!",
-];
 
-const loggedInAnnouncements = defaultAnnouncements;
-
-function App({ membership, onLogout }: { membership: CompanyMembership; onLogout: () => void }) {
+function App({ googleDisplayName, membership, onLogout, userEmail }: { googleDisplayName: string; membership: TeamMembership; onLogout: () => void; userEmail: string }) {
   const [isObjectionsOpen, setIsObjectionsOpen] = useState(false);
   const [isTeamInfoOpen, setIsTeamInfoOpen] = useState(false);
   const [isTopInfoOpen, setIsTopInfoOpen] = useState(false);
   const [activeOverlay, setActiveOverlay] = useState<ActiveOverlay>("bottom");
   const [prospectName, setProspectName] = useState("");
   const [repName, setRepName] = useState("");
-  const [isTopBarOpen, setIsTopBarOpen] = useState(true);
+  const [isTopBarOpen, setIsTopBarOpen] = useState(false);
+  const suggestedUsername = useMemo(() => {
+    const googleFirstName = googleDisplayName.trim().split(/\s+/)[0] || "";
+    const emailName = userEmail.split("@")[0] || "";
+    return googleFirstName || membership.display_name || emailName;
+  }, [googleDisplayName, membership.display_name, userEmail]);
+  const [username, setUsername] = useState(suggestedUsername);
+  const [usernameDraft, setUsernameDraft] = useState(suggestedUsername);
 
-  const [isNotepadOpen, setIsNotepadOpen] = useState(false);
-  const [isNotepadClosing, setIsNotepadClosing] = useState(false);
-  const [isTreeModalOpen, setIsTreeModalOpen] = useState(false);
-  const [isTreeModalClosing, setIsTreeModalClosing] = useState(false);
-  const treeData = useTreeData();
+  useEffect(() => {
+    setUsername((currentUsername) => currentUsername || suggestedUsername);
+    setUsernameDraft((currentDraft) => currentDraft || suggestedUsername);
+  }, [suggestedUsername]);
+
+  const treeModal = useModalTransition(240);
+  const logoutModal = useModalTransition(220);
+
+  const treeData = useTreeData(membership, username);
   const {
-    archivedTrees,
+    activeTree,
     copyTree,
     createBlankTree,
     deleteSelectedTree,
+    deleteTreeNote,
     hiddenAnnouncementIndexes,
     logout,
     noteDraft,
     pendingNoteDeleteIndex,
     renameSelectedTree,
-    restoreTree,
+    saveTreeData,
     selectedTreeId,
     setHiddenAnnouncementIndexes,
     setNoteDraft,
@@ -79,65 +71,85 @@ function App({ membership, onLogout }: { membership: CompanyMembership; onLogout
     treeNotes,
     trees,
   } = treeData;
-  const missingTargets = getMissingTargets(dialogueBlocks);
+  const showDefaultBlocks = false;
+  const visibleBaseDialogueBlocks: DialogueBlock[] = [];
   const topInfoResponses = teamInfoResponses.slice(0, 4);
   const sideInfoResponses = teamInfoResponses.slice(4);
   const names = { prospectName, repName };
-  const announcements = loggedInAnnouncements;
+  const announcements = activeTree?.tree.panels.top?.announcements ?? defaultAnnouncements;
 
-  const isModalOpen = isNotepadOpen || isNotepadClosing || isTreeModalOpen || isTreeModalClosing;
+  const isModalOpen = treeModal.isOpen || treeModal.isClosing || logoutModal.isOpen || logoutModal.isClosing;
   const editModeRef = useRef(false);
   const viewport = useCanvasViewport({ isEditModeRef: editModeRef });
-  const navigation = useCanvasNavigation({ isEditModeRef: editModeRef });
+  const navigation = useCanvasNavigation({ centerBlock: viewport.centerBlock, centerTextKey: viewport.centerTextKey });
   const { canUndo, flashingBlockId, goToHistoryIndex, historyIndex, navigateToBlock, selectedBlockId } = navigation;
   const edit = useEditMode({
+    baseBlocks: visibleBaseDialogueBlocks,
+    initialTreeData: activeTree?.tree ?? null,
+    onTreeDataChange: (nextData) => {
+      if (!activeTree) return false;
+      return saveTreeData(activeTree.id, nextData);
+    },
     scrollToTextKey: navigation.scrollToTextKey,
     setFlashingBlockId: navigation.setFlashingBlockId,
     setSelectedBlockId: navigation.setSelectedBlockId,
+    treeDataKey: activeTree?.id,
     treeScale: viewport.treeScale,
+    viewportTransform: viewport.transform,
   });
   editModeRef.current = edit.isEditMode;
 
-  function openNotepad() {
-    setIsNotepadClosing(false);
-    setIsNotepadOpen(true);
-  }
+  const renderedBlocks = [...visibleBaseDialogueBlocks, ...edit.customBlocks];
+  const renderedBlocksById = new Map(renderedBlocks.map((block) => [block.id, block]));
+  const freeformBlocks = edit.customBlocks;
 
-  function closeNotepad() {
-    if (isNotepadClosing) {
-      return;
-    }
+  const transferTitleTargets = useMemo(() => {
+    const targets = renderedBlocks.reduce<Record<string, string[]>>((titles, block) => {
+      const title = (edit.blockOverrides[block.id]?.title ?? block.title).trim();
+      if (!title) return titles;
+      titles[title] = [...(titles[title] ?? []), block.id];
+      return titles;
+    }, {});
 
-    setPendingNoteDeleteIndex(null);
-    setIsNotepadClosing(true);
-    window.setTimeout(() => {
-      setIsNotepadOpen(false);
-      setIsNotepadClosing(false);
-    }, 240);
-  }
+
+    return targets;
+  }, [edit.blockOverrides, renderedBlocks]);
+  const missingTargets: ReturnType<typeof getMissingTargets> = [];
+  const titleConflicts = Object.entries(transferTitleTargets)
+    .filter(([, matches]) => matches.length > 1)
+    .map(([label, matches]) => ({ blockId: "title", label, matches }));
+
+  const lastCenteredTreeIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!activeTree?.id || lastCenteredTreeIdRef.current === activeTree.id) return;
+
+    lastCenteredTreeIdRef.current = activeTree.id;
+    window.requestAnimationFrame(() => navigateToBlock(activeTree.tree.starterBlockId ?? "start"));
+  }, [activeTree?.id, activeTree?.tree.starterBlockId, navigateToBlock]);
 
   function openTreeModal() {
-    setIsTreeModalClosing(false);
     treeData.prepareTreeModal();
-    setIsTreeModalOpen(true);
+    treeModal.open();
   }
 
   function closeTreeModal() {
-    if (isTreeModalClosing) {
-      return;
-    }
-
-    setIsTreeModalClosing(true);
-    window.setTimeout(() => {
-      setIsTreeModalOpen(false);
-      setIsTreeModalClosing(false);
-    }, 240);
+    treeModal.close();
   }
 
-  function selectBlockForEdit(id: string) {
-    navigation.setSelectedBlockId(id);
-    navigation.setFlashingBlockId(null);
+  function openLogoutModal() {
+    logoutModal.open();
   }
+
+  function closeLogoutModal() {
+    logoutModal.close();
+  }
+
+  function confirmLogout() {
+    logout(() => edit.setIsEditMode(false));
+    onLogout();
+  }
+
 
   const renderDialogueBlock = (block: DialogueBlock, isAbsolute = false) => {
     if (edit.deletedBlockIds.has(block.id)) {
@@ -147,6 +159,7 @@ function App({ membership, onLogout }: { membership: CompanyMembership; onLogout
     return <DialogueCard
       block={block}
       customOptions={edit.resolveCustomOptions(block.id)}
+      blockOverride={edit.blockOverrides[block.id]}
       deletedButtonKeys={edit.deletedButtonKeys}
       isAbsolute={isAbsolute || edit.absoluteBlockIds.has(block.id)}
       isEditMode={edit.isEditMode}
@@ -157,11 +170,16 @@ function App({ membership, onLogout }: { membership: CompanyMembership; onLogout
       navigateToBlock={navigateToBlock}
       onRequestDeleteBlock={edit.requestDeleteBlock}
       onStartMoveBlock={edit.startMoveBlock}
+      onUpdateBlockOverride={edit.updateBlockOverride}
       onUpdateOption={edit.updateCustomOption}
+      onSetStarterBlock={edit.setStarterBlock}
+      starterBlockId={edit.starterBlockId}
+      transferTitleTargets={transferTitleTargets}
       pendingEditDelete={edit.pendingEditDelete}
       onCancelDelete={() => edit.setPendingEditDelete(null)}
       onConfirmDelete={edit.confirmEditDelete}
       position={edit.blockPositions[block.id]}
+      zIndex={edit.blockZIndexes[block.id]}
     />;
   };
 
@@ -170,65 +188,78 @@ function App({ membership, onLogout }: { membership: CompanyMembership; onLogout
       return null;
     }
 
-    return renderDialogueBlock(getBlock(id));
+    const block = renderedBlocksById.get(id);
+    return block ? renderDialogueBlock(block) : null;
   };
 
   return (
-    <div className={`app-viewport ${isModalOpen ? "is-modal-open" : ""} ${edit.isEditMode ? "is-edit-mode" : ""}`} style={{ "--tree-scale": viewport.treeScale } as CSSProperties}>
+    <div className={`app-viewport ${isModalOpen ? "is-modal-open" : ""} ${edit.isEditMode ? "is-edit-mode" : ""}`} style={{ "--canvas-x": `${viewport.transform.x}px`, "--canvas-y": `${viewport.transform.y}px`, "--tree-scale": viewport.treeScale } as CSSProperties}>
       <ViewportControls
-        canUndo={edit.isEditMode ? edit.editHistory.length > 0 : canUndo}
+        canUndo={edit.isEditMode ? edit.canUndoEdit : canUndo}
+        canRedo={edit.isEditMode ? edit.canRedoEdit : false}
         goToHistoryIndex={goToHistoryIndex}
         historyIndex={historyIndex}
         isEditMode={edit.isEditMode}
+        canEditActiveTree={Boolean(activeTree?.canEdit)}
         navigateToBlock={navigateToBlock}
+        starterBlockId={edit.starterBlockId}
         onToggleEditMode={edit.toggleEditMode}
         onAddBlock={edit.addCustomBlock}
         onUndoEdit={edit.undoEdit}
-        onZoomIn={viewport.zoomIn}
-        onZoomOut={viewport.zoomOut}
-        openNotepad={openNotepad}
+        onRedoEdit={edit.redoEdit}
         openTreeModal={openTreeModal}
       />
 
       <TreeModal
-        archivedTrees={archivedTrees}
         closeTreeModal={closeTreeModal}
         copyTree={copyTree}
         createBlankTree={createBlankTree}
         deleteSelectedTree={deleteSelectedTree}
-        isTreeModalClosing={isTreeModalClosing}
-        isTreeModalOpen={isTreeModalOpen}
+        downloadTreeBackup={treeData.downloadTreeBackup}
+        isTreeModalClosing={treeModal.isClosing}
+        isTreeModalOpen={treeModal.isOpen}
         renameSelectedTree={renameSelectedTree}
-        restoreTree={restoreTree}
         selectedTreeId={selectedTreeId}
         switchTree={switchTree}
         treeError={treeError}
         trees={trees}
       />
 
-      <NotepadModal
-        addUserNote={treeData.addTreeNote}
-        closeNotepad={closeNotepad}
-        confirmDeleteNote={treeData.confirmDeleteNote}
-        isNotepadClosing={isNotepadClosing}
-        isNotepadOpen={isNotepadOpen}
-        noteDraft={noteDraft}
-        pendingNoteDeleteIndex={pendingNoteDeleteIndex}
-        setNoteDraft={setNoteDraft}
-        setPendingNoteDeleteIndex={setPendingNoteDeleteIndex}
-        userNotes={treeNotes}
+
+      <LogoutModal
+        closeLogoutModal={closeLogoutModal}
+        confirmLogout={confirmLogout}
+        accountEmail={userEmail}
+        isLogoutClosing={logoutModal.isClosing}
+        isLogoutOpen={logoutModal.isOpen}
+        onSaveUsername={() => {
+          const nextUsername = usernameDraft.trim();
+          setUsername(nextUsername || suggestedUsername);
+          setUsernameDraft(nextUsername || suggestedUsername);
+        }}
+        teamName={membership.team_name}
+        username={username}
+        usernameDraft={usernameDraft}
+        setUsernameDraft={setUsernameDraft}
       />
 
       <TopBar
         announcements={announcements}
         hiddenAnnouncementIndexes={hiddenAnnouncementIndexes}
+        noteDraft={noteDraft}
+        notes={treeNotes}
         isFront={activeOverlay === "top"}
         isTopBarOpen={isTopBarOpen}
-        onLogout={() => { logout(() => edit.setIsEditMode(false)); onLogout(); }}
+        isAdmin={membership.member_role === "admin"}
+        onOpenLogout={openLogoutModal}
+        onOpenSettings={() => undefined}
+        onAddNote={treeData.addTreeNote}
+        onDeleteNote={deleteTreeNote}
         prospectName={prospectName}
         repName={repName}
         setActiveOverlay={setActiveOverlay}
         setHiddenAnnouncementIndexes={setHiddenAnnouncementIndexes}
+        setNoteDraft={setNoteDraft}
         setIsTopBarOpen={setIsTopBarOpen}
         setProspectName={setProspectName}
         setRepName={setRepName}
@@ -236,27 +267,33 @@ function App({ membership, onLogout }: { membership: CompanyMembership; onLogout
 
       <InfoPanels
         activeOverlay={activeOverlay}
+        isEditMode={edit.isEditMode}
         isObjectionsOpen={isObjectionsOpen}
         isTeamInfoOpen={isTeamInfoOpen}
         isTopInfoOpen={isTopInfoOpen}
         names={names}
         navigateToBlock={navigateToBlock}
         objectionResponses={objectionResponses}
+        onUpdatePanel={edit.updatePanel}
+        panels={edit.panels}
         setActiveOverlay={setActiveOverlay}
         setIsObjectionsOpen={setIsObjectionsOpen}
         setIsTeamInfoOpen={setIsTeamInfoOpen}
         setIsTopInfoOpen={setIsTopInfoOpen}
         sideInfoResponses={sideInfoResponses}
         topInfoResponses={topInfoResponses}
+        transferTitleTargets={transferTitleTargets}
       />
+
 
       <div className="canvas-scroll">
         <TreeBoard
-          customBlocks={edit.customBlocks}
-          customOptionConflicts={edit.customOptionConflicts}
+          customBlocks={freeformBlocks}
+          customOptionConflicts={[...edit.customOptionConflicts, ...titleConflicts]}
           missingTargets={missingTargets}
           renderBlock={renderBlock}
           renderCustomBlock={(block) => renderDialogueBlock(block, edit.absoluteBlockIds.has(block.id))}
+          showDefaultBlocks={showDefaultBlocks}
         />
       </div>
     </div>
@@ -264,17 +301,21 @@ function App({ membership, onLogout }: { membership: CompanyMembership; onLogout
 }
 
 function Root() {
-  const auth = useClosedCallAuth();
+  const auth = useTeamTownAuth();
 
   if (auth.isLoading) {
     return <LoginPage authError="" isConfigured={auth.isConfigured} isLoading={true} onGoogleLogin={auth.signInWithGoogle} />;
   }
 
   if (!auth.session || !auth.membership) {
-    return <LoginPage authError={auth.authError} isConfigured={auth.isConfigured} isLoading={false} onGoogleLogin={auth.signInWithGoogle} />;
+    const accessDenied = auth.isAccessDenied;
+
+    return <LoginPage accessDenied={accessDenied} authError={auth.authError} isConfigured={auth.isConfigured} isLoading={false} onGoogleLogin={auth.signInWithGoogle} />;
   }
 
-  return <App membership={auth.membership} onLogout={auth.signOut} />;
+  const googleDisplayName = String(auth.session.user.user_metadata?.full_name ?? auth.session.user.user_metadata?.name ?? "");
+
+  return <App googleDisplayName={googleDisplayName} membership={auth.membership} onLogout={auth.signOut} userEmail={auth.session.user.email ?? ""} />;
 }
 
 createRoot(document.getElementById("root")!).render(
@@ -282,3 +323,46 @@ createRoot(document.getElementById("root")!).render(
     <Root />
   </StrictMode>,
 );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

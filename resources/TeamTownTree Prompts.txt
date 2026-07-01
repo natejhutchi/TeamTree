@@ -1,7 +1,123 @@
 TeamTownTree Prompts
 
+FIGURE OUT TREES
 
-okay so how does this work, we have the default tree hardcoded in the repo, but we also have custom trees and edited trees within the app.. how do we save custom trees? what are they saved as? how do we ensure they stick to the app for all users... supabase? and if so, how would they be saved in supabase? considering layout and content.. what kind of file is one of these tree files?
+CREATE DEFAULT TREE
 
-create the main login page.. simple TeamTownTree (use the logo we have in app in the top bar) with google auth for log in... should i set up the supabase first? do i need to get this online in vercel?
+CREATE PAYMENT LOGIC
 
+SCALING UI CHANGES (including phone) - honestly, like 2 or 3 breakpoints should do it, use f12 and screen shots
+
+---
+
+left side bar is chunked into 2 halves
+
+---
+the bold on any text is a little bit thinner in edit mode, please make it match outside edit mode
+
+---
+alignment needs to not be toggle, but just next position
+--
+
+
+TIPS
+if you can fit your tree in one view, turn on edit mode for a clearer picture of all your blocks and skip the buttons entirely.
+
+----add a help section
+---
+FIX ANNOUNCEMENTS
+in the default notes/announcements, under "Click the tree icon to switch..." add "If any text in the body of a block matches the title of another block, it will automatically link to it and become a transfer button."
+
+add announcement: "the more you know the tree, the better you can navigate it. Eventually, you want navigation on autopilot so you can focus better on listening and delivery. "
+
+"It's best to try and carry the conversation naturally between blocks, rather then relying solely on your script. This is how you transition away from the tree on the canvas, and into the tree in your mind. If you're new, start with small transitions and work your way up."
+
+"As you naturalize the tree, start pruning out blocks you no longer need. That way you can flow off the top and be more in the moment with your prospect. Eventually you can pluck out the root"
+
+"Reciting lines is never better than having a real conversation with the prospect, but using this tree will help you get there"
+
+"the more you practice you get = more creative, until eventually you're only using them as guidelines"
+---
+make the 'x' to delete announcements default.. but on user created notes, make the 'x' only appear in edit mode
+---
+
+when text links to a card, so its a button, it needs an automatic underline, and titles that have buttons that go to them need an icon (i believe this line is somewhere else in here)
+--
+
+when exit edit mode is clicked, i want a notification "Saved" to appear center screen then immediately fade away over 3 seconds, i think i want the style of dark background so it doesn't look like a regular confirmation pop up, but pick a green to keep with the theme.. or actually pause, first tell me, what do you think would look good for this feature?
+----
+bottom bar rectangle editing, character cap, identical in both edit mode and normal mode
+
+side bar editing cap, no overflow
+
+--
+switch the two grey colors and add a purple after green
+
+--
+
+
+--
+
+the 'x's to delete notes, show them only in edit mode
+
+---
+
+Prospect and Rep not working, inline style adjustment and global assignment
+
+---
+
+double check duplicate block target blocker
+--
+
+in the text editor can we make tab run the indent and shift tab run the dedent?
+--
+
+all buttons should be automatically underlined in edit mode, and in edit mode, titles that are linked should have lucide link icon on their right (small)
+
+---
+
+changing text alignment should do what the last alignment action was, so if i centered one line, clicking the next line and pressing alignment will center... the only exception is if its already centered, in which case it will toggle next.. do you understand?
+---
+
+just as moving a card will always move it on top of others (higher z index) selecting a card should bring it to the top as well
+---
+
+copy paste block contents into another should preserve formatting, its keeping bold but not color or indents
+
+---
+change prospect and rep to Spect and Rep
+
+make sure representation in text would not change rep to the name, same with inspect and others
+--
+
+try again to show joiner lines
+---
+
+add divider line lucide minus (will add a divider line on a new line below the cursor), put it after the alignment button
+add title lucide type (will change any body text to the same size as the title text, put it after the italics button
+---
+
+when a card is selected, i want a dotted line around the border here (see red in pic)
+
+then, on that card, clicking and dragging text will highlight text, but clicking the edge of the card (in the border) will move the card
+
+for cards that are not selected, clicking ANYWHERE on the card and dragging will move the card, unless you select it, in which case only clicking the border will move it, clicking the body and dragging will highlight text
+
+do you get what I want?
+
+---
+give a green background to indented text, each indent, the green gets lighter, the shifts must not be too much, and the text must always be very readable (thinking about the darkest green)
+
+--
+
+in the tool bar, add a button feature, use lucide rectangle-horizontal.... this will create a pill in the block with a placeholder that says "type here".. the pill must wrap to the text, and will stretch horizontally and vertically (new lines are okay within the pill) but can never stretch outside the block.. these buttons can be drag moved within the block, same as the blocks are drag moves within the canvas. In this block goes regular text that follows the same rule as any other text, it can be formatted the same, and will link to another block if it matches the title the same.
+
+
+--
+
+CONTENT: move blurb in I am not using AI card out to a new card, link it with option "why isn't AI the solution?" which ends with a reframing of the bottleneck question.
+
+on solution card, add "I am opposed" resistance transfer to Exit
+
+
+CONTENT: its different with xyz need to be distinct cards, with one parent card

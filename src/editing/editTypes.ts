@@ -16,8 +16,27 @@ export type PendingEditDelete = {
 } | null;
 
 export type BlockPositionMap = Record<string, { x: number; y: number }>;
+export type BlockZIndexMap = Record<string, number>;
 export type CustomOptionMap = Record<string, { id: string; label: string }[]>;
 
 export type EditAction =
-  | { type: "delete-block"; id: string; customBlock?: DialogueBlock }
-  | { type: "add-block"; id: string };
+  | {
+      type: "delete-block";
+      id: string;
+      customBlock?: DialogueBlock;
+      override?: { title?: string; bodyHtml?: string };
+      position?: { x: number; y: number };
+      zIndex?: number;
+      wasAbsolute?: boolean;
+    }
+  | {
+      type: "add-block";
+      id: string;
+      customBlock: DialogueBlock;
+      position: { x: number; y: number };
+      zIndex: number;
+      override?: { title?: string; bodyHtml?: string };
+      wasAbsolute?: boolean;
+    };
+
+

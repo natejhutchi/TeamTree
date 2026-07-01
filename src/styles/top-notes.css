@@ -1,0 +1,58 @@
+/* Top bar notes expand until this cap, then scroll without a visible bar. */
+.top-bar-notes {
+  max-height: min(455px, calc(100vh - 150px));
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: 5px 78px 0;
+  margin-right: 0;
+  scrollbar-width: none;
+}
+
+.top-bar-notes::-webkit-scrollbar {
+  display: none;
+}
+
+.top-note.user-note {
+  background: rgba(246, 251, 235, 0.46);
+}
+
+.top-note-composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 78px 0;
+}
+
+.top-bar.has-no-announcements .top-note-composer {
+  display: flex;
+}
+
+.top-note-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 26px;
+  padding: 0 12px;
+  border: 1px solid rgba(77, 104, 68, 0.34);
+  border-radius: 999px;
+  background: rgba(246, 251, 235, 0.46);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.82rem;
+  box-shadow: inset 0 1px 3px rgba(43, 68, 35, 0.13);
+}
+
+.top-note-add {
+  flex: 0 0 auto;
+  height: 26px;
+  padding: 0 14px;
+  border: 1px solid rgba(46, 89, 45, 0.62);
+  border-radius: 999px;
+  background: #315f31;
+  color: #f2f8e8;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 3px 8px rgba(36, 55, 30, 0.16);
+}

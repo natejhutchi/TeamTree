@@ -1,0 +1,379 @@
+.block-body-editor {
+  min-height: 2.8em;
+  white-space: normal;
+  cursor: text;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1.38;
+  outline: none;
+}
+
+.block-body-editor:empty::before {
+  content: " ";
+  display: inline-block;
+  min-height: 1.4em;
+}
+
+.dialogue-block .edit-delete-confirm {
+  z-index: 80;
+  pointer-events: auto;
+}
+
+
+.text-edit-toolbar {
+  display: grid;
+  grid-template-columns: minmax(42px, 1fr) auto minmax(110px, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.text-edit-toolbar-left {
+  justify-self: start;
+}
+
+.text-edit-toolbar-center {
+  display: flex;
+  align-items: center;
+  justify-self: center;
+  gap: 8px;
+}
+
+.text-edit-toolbar > .text-color-tools {
+  justify-self: end;
+}
+
+.editable-body-choice {
+  margin: 8px 0 0;
+  text-align: center;
+  font-weight: 800;
+}
+
+.editable-body-choice-default {
+  color: #4f554b;
+}
+
+.editable-body-choice-solution {
+  color: #b87900;
+}
+
+.editable-body-choice-exit {
+  color: #2457b8;
+}
+
+.editable-body-choice-close {
+  color: #087a2f;
+}
+
+.editable-body-choice-busy {
+  color: #b83224;
+}
+
+
+
+
+
+
+.dialogue-block > .text-edit-toolbar {
+  position: absolute !important;
+  top: -34px;
+  left: 16px;
+  right: 16px;
+  z-index: 18;
+  width: auto;
+  height: 22px;
+  margin: 0 !important;
+  padding: 0;
+  pointer-events: auto;
+  contain: layout paint;
+}
+
+
+
+
+
+
+
+
+
+.block-body-editor .editable-script-line {
+  margin-bottom: 9px;
+  padding-left: calc(var(--indent, 0) * 48px);
+  color: var(--color-ink);
+  font-size: 1.05rem;
+  line-height: 1.42;
+}
+
+.choice-block .block-body-editor .editable-script-line {
+  max-width: 620px;
+  color: #34332f;
+  font-size: 1.07rem;
+}
+
+.block-body-editor .editable-muted-label {
+  display: block;
+  width: fit-content;
+  margin: 2px auto 12px;
+  color: var(--color-muted);
+  font-weight: 800;
+  text-align: center;
+}
+
+.block-body-editor .editable-button-stack {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  margin-top: 14px;
+}
+
+.block-body-editor .editable-button-row {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.block-body-editor .editable-button-row:last-child .editable-body-choice-busy {
+  margin-top: 4px;
+}
+
+.block-body-editor .editable-body-choice {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.42;
+  text-align: center;
+}
+
+.block-body-editor .script-list {
+  margin: 8px 0 10px;
+}
+
+
+
+body.is-moving-block,
+body.is-moving-block * {
+  user-select: none !important;
+  cursor: grabbing !important;
+}
+
+
+
+
+.dialogue-block.is-being-dragged {
+  z-index: 1000 !important;
+  pointer-events: auto;
+}
+
+
+.transfer-lines-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 18;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.transfer-lines-overlay line {
+  stroke: rgba(47, 82, 59, 0.42);
+  stroke-width: 1.35;
+  stroke-dasharray: 4 6;
+  vector-effect: non-scaling-stroke;
+}
+
+
+
+.text-edit-toolbar button.is-starter-block {
+  opacity: 0.34;
+  cursor: default;
+}
+
+.text-edit-toolbar button.is-starter-block:hover,
+.text-edit-toolbar button.is-starter-block:focus-visible {
+  color: inherit;
+  opacity: 0.34;
+}
+
+.text-edit-toolbar button.is-not-starter-block {
+  color: var(--color-text);
+  opacity: 1;
+}
+
+.dialogue-block.has-inline-popup > :not(.edit-delete-confirm):not(.edit-card-popup-scrim) {
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+.edit-card-popup-scrim {
+  position: absolute;
+  inset: -1px;
+  z-index: 70;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.dialogue-block.has-inline-popup .edit-delete-confirm {
+  opacity: 1;
+  z-index: 90;
+}
+
+
+.block-content .editable-script-line {
+  margin-bottom: 9px;
+  padding-left: calc(var(--indent, 0) * 48px);
+  color: var(--color-ink);
+  font-size: 1.05rem;
+  line-height: 1.42;
+}
+
+.choice-block .block-content .editable-script-line {
+  max-width: 620px;
+  color: #34332f;
+  font-size: 1.07rem;
+}
+
+.block-content .editable-muted-label {
+  display: block;
+  width: fit-content;
+  margin: 2px auto 12px;
+  color: var(--color-muted);
+  font-weight: 800;
+  text-align: center;
+}
+
+.block-content .editable-button-stack {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  margin-top: 14px;
+}
+
+.block-content .editable-button-row {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.block-content .editable-button-row:last-child .editable-body-choice-busy {
+  margin-top: 4px;
+}
+
+.block-content .editable-body-choice {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.42;
+  text-align: center;
+}
+
+.block-content .editable-body-choice .inline-link,
+.block-content .editable-body-choice .inline-link-reference {
+  color: inherit;
+}
+
+.block-content .script-list {
+  margin: 8px 0 10px;
+}
+
+
+.block-content .editable-muted-label,
+.block-body-editor .editable-muted-label {
+  font-size: 1rem;
+  line-height: 1.42;
+}
+
+
+
+
+
+.tree-delete-confirm {
+  z-index: 20;
+}
+
+.block-body-editor > div:not([class]),
+.block-body-editor > p:not([class]),
+.block-content > div:not([class]),
+.block-content > p:not([class]),
+.block-body-editor > div.is-flashing,
+.block-body-editor > p.is-flashing,
+.block-content > div.is-flashing,
+.block-content > p.is-flashing {
+  margin: 0 0 9px;
+  padding-left: 0;
+  max-width: 620px;
+  color: var(--color-ink);
+  font-size: 1.05rem;
+  line-height: 1.42;
+  white-space: normal;
+}
+
+.choice-block .block-body-editor > div:not([class]),
+.choice-block .block-body-editor > p:not([class]),
+.choice-block .block-content > div:not([class]),
+.choice-block .block-content > p:not([class]),
+.choice-block .block-body-editor > div.is-flashing,
+.choice-block .block-body-editor > p.is-flashing,
+.choice-block .block-content > div.is-flashing,
+.choice-block .block-content > p.is-flashing {
+  color: #34332f;
+  font-size: 1.07rem;
+}
+
+
+.block-body-editor .editable-script-line.is-empty-editable-line,
+.block-content .editable-script-line.is-empty-editable-line {
+  display: block;
+  min-height: 1.42em;
+  margin-bottom: 0;
+  caret-color: var(--color-ink);
+}
+
+.block-body-editor .editable-button-stack > .editable-script-line.is-empty-editable-line,
+.block-content .editable-button-stack > .editable-script-line.is-empty-editable-line {
+  margin: 0;
+}
+
+
+
+.tiptap-block-editor {
+  outline: none;
+}
+
+.tiptap-block-editor p {
+  margin: 0 0 9px;
+}
+
+.tiptap-block-editor p:empty::before {
+  content: " ";
+  display: inline-block;
+  min-height: 1.42em;
+}
+
+.tiptap-block-editor ul,
+.tiptap-block-editor ol {
+  margin: 8px 0 10px;
+  padding-left: 2em;
+}
+
+
+
+
+
+
+
+
+/* Preserve intentional blank Tiptap lines in view mode. */
+.block-content p:empty,
+.team-info-panel .tiptap-panel-editor p:empty,
+.objection-panel .tiptap-panel-editor p:empty,
+.team-info-panel .team-info-response > div p:empty,
+.objection-panel .objection-response > div p:empty {
+  min-height: 1.34em;
+}
+
+.block-content p:empty::before,
+.team-info-panel .tiptap-panel-editor p:empty::before,
+.objection-panel .tiptap-panel-editor p:empty::before,
+.team-info-panel .team-info-response > div p:empty::before,
+.objection-panel .objection-response > div p:empty::before {
+  content: "\00a0";
+}

@@ -1,0 +1,184 @@
+.top-bar {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 20;
+  width: min(900px, var(--bottom-panel-width), calc(100vw - var(--overlay-edge-gap)));
+  border: 1px solid rgba(90, 111, 76, 0.42);
+  border-top: 0;
+  border-radius: 0 0 18px 18px;
+  background: var(--color-bar);
+  box-shadow: 0 12px 30px rgba(36, 55, 30, 0.12);
+  transform: translateX(-50%);
+  transition: transform 180ms ease;
+}
+
+.top-bar.is-collapsed {
+  transform: translate(-50%, calc(-100% + 24px));
+}
+
+.top-bar-content {
+  display: grid;
+  gap: 5px;
+  padding: 6px 8px 25px;
+}
+
+.top-bar.has-no-announcements .top-bar-content {
+  padding-bottom: 18px;
+}
+
+.top-bar-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.top-bar-title {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  line-height: 0;
+  transform: translateX(-50%);
+}
+
+.top-bar-logo {
+  display: block;
+  width: auto;
+  height: 24px;
+  object-fit: contain;
+}
+
+.top-bar-names {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: 2px;
+  gap: 6px;
+  min-width: 0;
+}
+
+.top-name-input {
+  width: 82px;
+  min-width: 0;
+  height: 26px;
+  overflow: hidden;
+  padding: 3px 7px;
+  border: 1px solid rgba(90, 111, 76, 0.42);
+  border-radius: 999px;
+  background: rgba(246, 251, 235, 0.46);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+}
+
+.top-name-input::placeholder {
+  color: rgba(89, 106, 81, 0.42);
+  opacity: 1;
+}
+.top-name-input:focus {
+  border-color: #2f6f6b;
+  outline: none;
+}
+
+.top-bar-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.account-link {
+  width: 30px;
+  height: 30px;
+}
+
+.top-bar-notes {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 5px;
+  min-width: 0;
+  padding: 5px 78px;
+}
+
+.top-bar.has-no-announcements .top-bar-notes {
+  display: none;
+}
+
+.top-note {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 7px;
+  flex: 0 0 auto;
+  max-width: 100%;
+  max-height: 96px;
+  overflow: hidden;
+  padding: 4px 7px 5px;
+  background: rgba(246, 251, 235, 0.46);
+
+  color: var(--color-ink);
+  font-size: 0.82rem;
+  line-height: 1.22;
+  opacity: 1;
+  transition:
+    max-height 240ms ease,
+    opacity 180ms ease,
+    padding 240ms ease;
+}
+
+.top-note.is-exiting {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+}
+
+.top-note span {
+  min-width: 0;
+}
+
+.top-note-dismiss {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+.top-note-dismiss:disabled {
+  cursor: default;
+}
+
+.top-note-dismiss svg {
+  width: 13px;
+  height: 13px;
+}
+
+.top-bar-toggle {
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  z-index: 3;
+  width: 34px;
+  height: 22px;
+  transform: translateX(-50%);
+}
+
+.top-bar-toggle svg,
+.bottom-info-toggle svg,
+.team-info-toggle svg,
+.objection-toggle svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-muted);
+  opacity: 0.74;
+}

@@ -1,11 +1,12 @@
 import type { DialogueBlock } from "../dialogueTree";
 import type { BlockSide, CustomOption, CustomOptionMap } from "./editTypes";
 
-export function createCustomBlock(id = `custom-${Date.now()}`): DialogueBlock {
+export function createCustomBlock(id = `custom-${Date.now()}`, title = "Title"): DialogueBlock {
   return {
     id,
-    title: "Title",
+    title,
     layoutArea: "custom",
+    bodyFormat: "tiptap",
     lines: [{ parts: [{ kind: "text", text: "Type your lines\nAny text that matches another block's title will automatically become a transfer button. Transfer buttons are case sensitive." }] }],
   };
 }
@@ -16,7 +17,7 @@ export function createCustomOption(id = `option-${Date.now()}`) {
 
 export function getAllBlockTitles(blocks: DialogueBlock[]) {
   return blocks.reduce<Record<string, string[]>>((titles, block) => {
-    const normalizedTitle = block.title.trim().toLowerCase();
+    const normalizedTitle = block.title.trim();
 
     if (!normalizedTitle) {
       return titles;
@@ -30,7 +31,7 @@ export function getAllBlockTitles(blocks: DialogueBlock[]) {
 export function getCustomOptionConflicts(customOptionsByBlock: CustomOptionMap, allBlockTitles: Record<string, string[]>) {
   return Object.entries(customOptionsByBlock).flatMap(([blockId, options]) => (
     options.flatMap((option) => {
-      const matches = allBlockTitles[option.label.trim().toLowerCase()] ?? [];
+      const matches = allBlockTitles[option.label.trim()] ?? [];
       return matches.length > 1 ? [{ blockId, label: option.label, matches }] : [];
     })
   ));
@@ -63,7 +64,7 @@ export function getAvailableSides(block: DialogueBlock, absoluteBlockIds: Set<st
 
 export function resolveCustomOptions(blockId: string, customOptionsByBlock: CustomOptionMap, allBlockTitles: Record<string, string[]>): CustomOption[] {
   return (customOptionsByBlock[blockId] ?? []).map((option) => {
-    const matches = allBlockTitles[option.label.trim().toLowerCase()] ?? [];
+    const matches = allBlockTitles[option.label.trim()] ?? [];
 
     return {
       ...option,
@@ -72,6 +73,9 @@ export function resolveCustomOptions(blockId: string, customOptionsByBlock: Cust
     };
   });
 }
+
+
+
 
 
 

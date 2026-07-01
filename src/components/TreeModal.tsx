@@ -1,194 +1,203 @@
 import { useEffect, useRef, useState } from "react";
-import { DEFAULT_TREE_ID, DEFAULT_TREE_NAME, type StoredTree } from "../storage";
 import { Icon } from "./Icon";
+import type { StoredTree } from "./useTreeData";
 
 export function TreeModal({
-  archivedTrees,
   closeTreeModal,
   copyTree,
   createBlankTree,
   deleteSelectedTree,
+  downloadTreeBackup,
   isTreeModalClosing,
   isTreeModalOpen,
   renameSelectedTree,
-  restoreTree,
   selectedTreeId,
   switchTree,
   treeError,
   trees,
 }: {
-  archivedTrees: StoredTree[];
   closeTreeModal: () => void;
-  copyTree: () => void;
+  copyTree: (treeId?: string) => void;
   createBlankTree: () => void;
-  deleteSelectedTree: () => void;
+  deleteSelectedTree: (treeId?: string) => void;
+  downloadTreeBackup: (treeId?: string) => void;
   isTreeModalClosing: boolean;
   isTreeModalOpen: boolean;
-  renameSelectedTree: (nextName: string) => boolean;
-  restoreTree: (treeId: string) => void;
+  renameSelectedTree: (nextName: string, treeId?: string) => boolean | Promise<boolean>;
   selectedTreeId: string;
   switchTree: (treeId: string) => void;
   treeError: string;
   trees: StoredTree[];
 }) {
-  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-  const [selectedArchivedTreeId, setSelectedArchivedTreeId] = useState("");
   const [treeNameDraft, setTreeNameDraft] = useState("");
+  const [isRenamingTree, setIsRenamingTree] = useState(false);
+  const [pendingDeleteTreeId, setPendingDeleteTreeId] = useState<string | null>(null);
   const treeNameInputRef = useRef<HTMLInputElement | null>(null);
 
   const selectedTree = trees.find((tree) => tree.id === selectedTreeId);
+  const pendingDeleteTree = trees.find((tree) => tree.id === pendingDeleteTreeId);
 
   useEffect(() => {
     setTreeNameDraft(selectedTree?.name ?? "");
   }, [selectedTree?.name]);
 
+  useEffect(() => {
+    if (!isRenamingTree) return;
+    treeNameInputRef.current?.focus();
+    treeNameInputRef.current?.select();
+  }, [isRenamingTree]);
+
   if (!isTreeModalOpen && !isTreeModalClosing) {
     return null;
   }
 
-  const customTrees = trees.filter((tree) => tree.id !== DEFAULT_TREE_ID);
-  const canEditSelectedTree = selectedTreeId !== DEFAULT_TREE_ID;
-  const selectedArchiveValue = selectedArchivedTreeId || archivedTrees[0]?.id || "";
-
-  function openArchive() {
-    setSelectedArchivedTreeId(archivedTrees[0]?.id ?? "");
-    setIsArchiveOpen(true);
-  }
-
-  function restoreSelectedTree() {
-    if (!selectedArchiveValue) {
-      return;
-    }
-
-    restoreTree(selectedArchiveValue);
-    setSelectedArchivedTreeId("");
-  }
-
+  const canEditSelectedTree = Boolean(selectedTree?.canEdit);
   function commitTreeName() {
-    if (!canEditSelectedTree) {
-      setTreeNameDraft(selectedTree?.name ?? DEFAULT_TREE_NAME);
+    if (!selectedTree || !canEditSelectedTree) {
+      setTreeNameDraft(selectedTree?.name ?? "");
+      setIsRenamingTree(false);
       return;
     }
 
-    if (!renameSelectedTree(treeNameDraft)) {
-      setTreeNameDraft(selectedTree?.name ?? "");
-    }
+    const treeId = selectedTree.id;
+    void Promise.resolve(renameSelectedTree(treeNameDraft, treeId)).then((didRename: boolean) => {
+      if (!didRename) {
+        setTreeNameDraft((currentDraft) => trees.find((tree) => tree.id === treeId)?.name ?? currentDraft);
+      }
+    });
+    setIsRenamingTree(false);
   }
 
-  function focusTreeName() {
-    if (!canEditSelectedTree) {
+  function selectTree(treeId: string) {
+    switchTree(treeId);
+  }
+
+  function focusTreeName(tree: StoredTree) {
+    if (!tree.canEdit) {
       return;
     }
 
-    treeNameInputRef.current?.focus();
-    treeNameInputRef.current?.select();
+    switchTree(tree.id);
+    setTreeNameDraft(tree.name);
+    setIsRenamingTree(true);
+  }
+
+  function requestDeleteTree(tree: StoredTree) {
+    if (!tree.canEdit) {
+      return;
+    }
+
+    switchTree(tree.id);
+    setPendingDeleteTreeId(tree.id);
+  }
+
+  function confirmDeleteTree() {
+    if (!pendingDeleteTreeId) {
+      return;
+    }
+
+    void deleteSelectedTree(pendingDeleteTreeId);
+    setPendingDeleteTreeId(null);
   }
 
   return (
-    <>
-      <div className={`notepad-shell account-shell tree-shell ${isTreeModalClosing ? "is-closing" : ""}`} role="dialog" aria-modal="true" aria-label="Trees">
-        <div className={`notepad-panel account-panel tree-panel ${isArchiveOpen ? "is-disabled-behind-archive" : ""} ${isTreeModalClosing ? "is-closing" : ""}`} aria-hidden={isArchiveOpen}>
-          <div className={`notepad-header ${isArchiveOpen ? "is-muted-by-archive" : ""}`}>
+    <div className={`notepad-shell account-shell tree-shell ${isTreeModalClosing ? "is-closing" : ""}`} role="dialog" aria-modal="true" aria-label="Trees">
+      <div className={`notepad-panel account-panel tree-panel ${isTreeModalClosing ? "is-closing" : ""}`}>
+        <div className="notepad-header">
             <h2>Trees</h2>
-            <div className="tree-header-actions">
-              <button aria-label="Open archived trees" className="notepad-icon-button" disabled={isArchiveOpen} onClick={openArchive} type="button">
-                <Icon name="archive" />
-              </button>
-              <button aria-label="Close tree switcher" className="notepad-icon-button" disabled={isArchiveOpen} onClick={closeTreeModal} type="button">
-                <Icon name="x" />
-              </button>
-            </div>
+          <div className="tree-header-actions">
+            <button aria-label="Close tree switcher" className="notepad-icon-button" onClick={closeTreeModal} type="button">
+              <Icon name="x" />
+            </button>
+          </div>
           </div>
 
           <div className="account-logged-out tree-modal-controls">
-            <label className="tree-select-shell">
-              <span className="sr-only">Select tree</span>
-              <select
-                aria-label="Select tree"
-                disabled={isArchiveOpen}
-                onChange={(event) => switchTree(event.target.value)}
-                value={selectedTreeId}
-              >
-                <option value={DEFAULT_TREE_ID}>{DEFAULT_TREE_NAME}</option>
-                {customTrees.map((tree) => (
-                  <option key={tree.id} value={tree.id}>{tree.name}</option>
-                ))}
-              </select>
-              <span className="tree-select-chevron" aria-hidden="true"><Icon name="chevronDown" /></span>
-            </label>
+            <div className="tree-picker" role="listbox" aria-label="Select tree">
+              {trees.map((tree) => {
+                const isSelected = tree.id === selectedTreeId;
+                return isRenamingTree && isSelected ? (
+                  <div aria-selected={isSelected} className="tree-picker-option tree-picker-rename" key={tree.id} role="option">
+                    <label className="tree-picker-main">
+                      <span className="sr-only">Rename selected tree</span>
+                      <input
+                        aria-label="Rename selected tree"
+                        className="tree-name-inline-editor"
+                        maxLength={30}
+                        onBlur={commitTreeName}
+                        onChange={(event) => setTreeNameDraft(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.currentTarget.blur();
+                          }
+                        }}
+                        ref={treeNameInputRef}
+                        value={treeNameDraft}
+                      />
+                    </label>
+                    <div className="tree-row-actions">
+                      <button
+                        aria-label="Save tree name"
+                        className="tree-row-action"
+                        onClick={() => void commitTreeName()}
+                        onMouseDown={(event) => event.preventDefault()}
+                        type="button"
+                      >
+                        <Icon name="check" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div aria-selected={isSelected} className="tree-picker-option" key={tree.id} role="option">
+                    <button className="tree-picker-main" onClick={() => selectTree(tree.id)} type="button">
+                      <span className="tree-picker-name">{tree.name}</span>
+                      {tree.creatorName ? <span className="tree-picker-creator">by {tree.creatorName}</span> : null}
+                    </button>
+                    <div className="tree-row-actions">
+                      <button aria-label={`Copy ${tree.name}`} className="tree-row-action" onClick={() => void copyTree(tree.id)} type="button">
+                        <Icon name="copy" />
+                      </button>
+                      <button aria-label={`Rename ${tree.name}`} className="tree-row-action" disabled={!tree.canEdit} onClick={() => focusTreeName(tree)} type="button">
+                        <Icon name="pencil" />
+                      </button>
+                      <button aria-label={`Delete ${tree.name}`} className="tree-row-action tree-row-delete" disabled={!tree.canEdit} onClick={() => requestDeleteTree(tree)} type="button">
+                        <Icon name="trash2" />
+                      </button>
+                      <button aria-label={`Download ${tree.name}`} className="tree-row-action" onClick={() => void downloadTreeBackup(tree.id)} type="button">
+                        <Icon name="download" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-            <input
-              aria-label="Rename selected tree"
-              className="tree-name-editor"
-              disabled={isArchiveOpen || !canEditSelectedTree}
-              onBlur={commitTreeName}
-              onChange={(event) => setTreeNameDraft(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.currentTarget.blur();
-                }
-              }}
-              ref={treeNameInputRef}
-              value={treeNameDraft}
-            />
-
-            <button className="notepad-add" disabled={isArchiveOpen} onClick={createBlankTree} type="button">
+            <button className="notepad-add" onClick={createBlankTree} type="button">
               Create Tree
             </button>
+            <button className="tree-upload-placeholder" type="button">Upload</button>
 
-            <div className="tree-text-actions">
-              <button className="account-mode-button" disabled={isArchiveOpen} onClick={copyTree} type="button">
-                Copy Tree
-              </button>
-              <button className="account-mode-button" disabled={isArchiveOpen || !canEditSelectedTree} onClick={focusTreeName} type="button">
-                Rename Tree
-              </button>
-              <button className="account-mode-button tree-delete-text" disabled={isArchiveOpen || !canEditSelectedTree} onClick={deleteSelectedTree} type="button">
-                Delete Tree
-              </button>
-            </div>
           </div>
 
           {treeError ? <p className="account-error">{treeError}</p> : null}
+
+          {pendingDeleteTree ? (
+            <div className="notepad-confirm tree-delete-confirm" role="alertdialog" aria-modal="true" aria-label="Confirm tree deletion">
+              <p>Delete {pendingDeleteTree.name}?</p>
+              <div className="notepad-confirm-actions">
+                <button onClick={() => setPendingDeleteTreeId(null)} type="button">Cancel</button>
+                <button onClick={confirmDeleteTree} type="button">Delete</button>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
-
-      {isArchiveOpen ? (
-        <div className="notepad-shell account-shell tree-archive-shell" role="dialog" aria-modal="true" aria-label="Archived trees">
-          <div className="notepad-panel account-panel tree-archive-panel">
-            <div className="notepad-header">
-              <h2>Archive</h2>
-              <button aria-label="Close archived trees" className="notepad-icon-button" onClick={() => setIsArchiveOpen(false)} type="button">
-                <Icon name="x" />
-              </button>
-            </div>
-
-            <div className="account-logged-out tree-modal-controls">
-              <label className="tree-select-shell">
-                <span className="sr-only">Select archived tree</span>
-                <select
-                  aria-label="Select archived tree"
-                  disabled={archivedTrees.length === 0}
-                  onChange={(event) => setSelectedArchivedTreeId(event.target.value)}
-                  value={selectedArchiveValue}
-                >
-                  {archivedTrees.length === 0 ? <option value="">No archived trees</option> : null}
-                  {archivedTrees.map((tree) => (
-                    <option key={tree.id} value={tree.id}>{tree.name}</option>
-                  ))}
-                </select>
-                <span className="tree-select-chevron" aria-hidden="true"><Icon name="chevronDown" /></span>
-              </label>
-
-              <button className="notepad-add" disabled={!selectedArchiveValue} onClick={restoreSelectedTree} type="button">
-                Restore Tree
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </>
   );
 }
+
+
+
+
+
 
 

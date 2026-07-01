@@ -1,4 +1,4 @@
--- ClosedCall by TeamTown Supabase schema
+-- TeamTownTree Supabase schema
 -- Run this in Supabase SQL editor after creating the project.
 
 create extension if not exists citext;
@@ -18,7 +18,7 @@ create table if not exists public.company_members (
   email citext not null,
   user_id uuid references auth.users(id) on delete set null,
   display_name text not null,
-  role text not null default 'rep' check (role in ('owner', 'admin', 'editor', 'rep')),
+  role text not null default 'rep' check (role in ('admin', 'rep')),
   status text not null default 'active' check (status in ('active', 'disabled')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -99,7 +99,7 @@ as $$
     where cm.company_id = target_company_id
       and cm.user_id = auth.uid()
       and cm.status = 'active'
-      and cm.role in ('owner', 'admin', 'editor', 'rep')
+      and cm.role in ('admin', 'rep')
   );
 $$;
 
@@ -190,17 +190,19 @@ create policy trees_delete_company_admins
       where cm.company_id = trees.company_id
         and cm.user_id = auth.uid()
         and cm.status = 'active'
-        and cm.role in ('owner', 'admin')
+        and cm.role = 'admin'
     )
   );
 
 -- Example seed. Edit before running, or run manually later.
 -- insert into public.companies (name, slug, brand)
--- values ('TeamTown', 'teamtown', '{"productName":"ClosedCall","logoText":"ClosedCall","metaphor":"tree"}'::jsonb)
+-- values ('TeamTown', 'teamtown', '{"productName":"TeamTownTree","logoText":"TeamTownTree","metaphor":"tree"}'::jsonb)
 -- on conflict (slug) do nothing;
 --
 -- insert into public.company_members (company_id, email, display_name, role)
--- select id, 'rep@example.com', 'Rep Name', 'owner'
+-- select id, 'rep@example.com', 'Rep Name', 'admin'
 -- from public.companies
 -- where slug = 'teamtown'
 -- on conflict do nothing;
+
+

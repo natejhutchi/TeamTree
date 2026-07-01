@@ -1,0 +1,117 @@
+.viewport-icon-button,
+.account-link,
+.top-bar-toggle,
+.team-info-toggle,
+.objection-toggle,
+.bottom-info-toggle {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.viewport-icon-button {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.viewport-icon-button svg,
+.account-link svg,
+.top-bar-toggle svg,
+.team-info-toggle svg,
+.objection-toggle svg,
+.bottom-info-toggle svg {
+  display: block;
+}
+
+.viewport-icon-button:disabled {
+  opacity: 0.24;
+  cursor: default;
+}
+
+.viewport-corner-controls {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.viewport-corner-controls .viewport-icon-button {
+  width: 32px;
+  height: 32px;
+}
+
+.viewport-bottom-left-controls {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.viewport-bottom-left-controls .viewport-icon-button {
+  width: 32px;
+  height: 32px;
+}
+
+.viewport-bottom-right-controls {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  z-index: 10000;
+  width: 68px;
+  height: 68px;
+  pointer-events: none;
+}
+
+.viewport-bottom-right-controls .viewport-icon-button {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  pointer-events: auto;
+}
+
+.viewport-bottom-right-controls .viewport-edit-button {
+  right: 0;
+  bottom: 0;
+}
+
+.viewport-bottom-right-controls .viewport-add-block-button {
+  right: 22px;
+  bottom: 22px;
+}
+
+
+.viewport-corner-controls .viewport-icon-button,
+.viewport-bottom-left-controls .viewport-icon-button,
+.viewport-history-controls .viewport-icon-button,
+.viewport-notebook-button {
+  position: relative;
+  z-index: 10001;
+}
+
+.viewport-bottom-right-controls .viewport-icon-button {
+  position: absolute;
+  z-index: 10001;
+}
+
+
+.viewport-notebook-button {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  z-index: 10000;
+  width: 32px;
+  height: 32px;
+}

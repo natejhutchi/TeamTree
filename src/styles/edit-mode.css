@@ -1,0 +1,379 @@
+.app-viewport.is-edit-mode .dialogue-block {
+  opacity: 1;
+  filter: none;
+}
+
+.app-viewport.is-edit-mode [contenteditable="true"] {
+  cursor: text;
+}
+
+
+.app-viewport.is-edit-mode [contenteditable="true"] {
+  user-select: text;
+}
+
+.edit-delete-button {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--color-muted);
+  line-height: 1;
+  font: inherit;
+  cursor: pointer;
+}
+
+.edit-delete-button:hover,
+.edit-delete-button:focus-visible {
+  color: var(--color-text);
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.edit-delete-button svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 1.9;
+}
+
+.edit-delete-block {
+  position: absolute;
+  top: -19px;
+  left: -19px;
+  z-index: 4;
+  width: 16px;
+  height: 16px;
+}
+
+.editable-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.edit-delete-choice {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+}
+
+.editable-script-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.editable-script-option .script-line {
+  margin-top: 0;
+}
+
+.dialogue-block {
+  position: relative;
+}
+
+.dialogue-block.is-muted .choice-button:hover,
+.dialogue-block.is-muted .choice-button:focus-visible,
+.dialogue-block.is-muted .inline-link:hover,
+.dialogue-block.is-muted .inline-link:focus-visible,
+.dialogue-block.is-muted .inline-link:active {
+  text-decoration: none;
+  outline: none;
+}
+
+.dialogue-block.is-muted .inline-link {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.edit-move-block,
+.edit-add-block {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-muted);
+  cursor: grab;
+  line-height: 1;
+}
+
+.edit-move-block:hover,
+.edit-add-block:hover,
+.edit-move-block:focus-visible,
+.edit-add-block:focus-visible {
+  color: var(--color-text);
+  outline: none;
+}
+
+.edit-move-block svg,
+.edit-add-block svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 1.9;
+}
+
+.edit-move-block {
+  position: absolute;
+  top: -19px;
+  right: -19px;
+  z-index: 4;
+  width: 16px;
+  height: 16px;
+}
+
+.edit-move-block:active {
+  cursor: grabbing;
+}
+
+.edit-add-block {
+  position: absolute;
+  z-index: 4;
+  width: 16px;
+  height: 16px;
+  opacity: 0.78;
+}
+
+.edit-add-block-top {
+  top: -19px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.edit-add-block-right {
+  top: 50%;
+  right: -19px;
+  transform: translateY(-50%);
+}
+
+.edit-add-block-bottom {
+  bottom: -19px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.edit-add-block-left {
+  top: 50%;
+  left: -19px;
+  transform: translateY(-50%);
+}
+
+.dialogue-block.is-absolute-block {
+  width: 640px;
+  max-width: 640px;
+  min-height: 110px;
+  z-index: 15;
+}
+
+.dialogue-block.is-absolute-block .block-content {
+  min-width: 0;
+}
+
+.button-stack {
+  position: relative;
+}
+
+.editable-script-option {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.editable-script-option > .edit-delete-choice {
+  position: absolute;
+  top: 0.2em;
+  left: calc((var(--indent, 0) * 48px) + 68px);
+  width: 13px;
+  height: 13px;
+}
+
+.editable-script-option .script-line {
+  margin-top: 0;
+}
+
+.edit-add-option {
+  appearance: none;
+  -webkit-appearance: none;
+  position: absolute;
+  top: 50%;
+  right: -22px;
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.edit-add-option:hover,
+.edit-add-option:focus-visible {
+  color: var(--color-text);
+  outline: none;
+}
+
+.edit-add-option svg,
+.edit-delete-choice svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 1.85;
+}
+
+.edit-delete-block svg,
+.edit-move-block svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.9;
+}
+
+.edit-delete-block,
+.edit-move-block {
+  width: 20px;
+  height: 20px;
+}
+
+.editable-choice.has-conflict .choice-button {
+  color: #9b3428;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-underline-offset: 3px;
+}
+
+.editable-script-option {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  justify-content: flex-start;
+  padding-left: calc(var(--indent, 0) * 48px);
+  width: 100%;
+}
+
+.editable-script-option > .edit-delete-choice {
+  position: static;
+  flex: 0 0 auto;
+  margin-top: 0.2em;
+  width: 13px;
+  height: 13px;
+}
+
+.editable-script-option .script-line {
+  flex: 1 1 auto;
+  margin-top: 0;
+  padding-left: 0;
+}
+
+.editable-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.editable-list-item .edit-delete-choice {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+}
+
+.text-edit-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  color: var(--color-muted);
+}
+
+.text-edit-toolbar button {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.text-edit-toolbar button:hover,
+.text-edit-toolbar button:focus-visible {
+  color: var(--color-text);
+  outline: none;
+}
+
+.text-edit-toolbar svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.9;
+}
+
+.text-color-tools {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.text-edit-toolbar .text-color-swatch {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(42, 64, 34, 0.28);
+  border-radius: 50%;
+  background: var(--swatch-color);
+}
+
+.editable-script-option,
+.editable-list-item {
+  display: block;
+  padding-left: 0;
+}
+
+.editable-script-option > .edit-delete-choice,
+.editable-list-item .edit-delete-choice {
+  display: none;
+}
+.text-edit-toolbar button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.text-edit-toolbar button:disabled:hover,
+.text-edit-toolbar button:disabled:focus-visible {
+  color: inherit;
+}
+
+.app-viewport.is-edit-mode .dialogue-block.is-selected {
+  border-color: rgba(90, 111, 76, 0.42);
+  box-shadow: 0 18px 48px rgba(36, 55, 30, 0.09);
+}
+
+.app-viewport.is-edit-mode .script-block.is-selected {
+  box-shadow: 0 10px 26px rgba(36, 55, 30, 0.1);
+}
+
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -11,10 +11,10 @@ export type StoredData = {
   activeTreeId: string;
 };
 
-export const STORAGE_KEY = "teamtown-tree:data";
+export const STORAGE_KEY = "teamtree:data";
 export const DEFAULT_TREE_ID = "teamtown-default-tree";
 export const DEFAULT_TREE_NAME = "TeamTown";
-export const ANNOUNCEMENT_STORAGE_KEY = "teamtown-tree:hidden-announcements";
+export const ANNOUNCEMENT_STORAGE_KEY = "teamtree:hidden-announcements";
 
 export type HiddenAnnouncementMap = Record<string, number[]>;
 

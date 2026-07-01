@@ -27,6 +27,7 @@ export type DialogueBlock = {
   id: string;
   title: string;
   layoutArea: string;
+  bodyFormat?: "legacy" | "tiptap";
   lines?: ScriptLine[];
   mutedLabels?: string[];
   responseLines?: ScriptLine[];
@@ -76,7 +77,7 @@ const freelancerQuestions = list(
 
 const painExitLines = (indent = 2): ScriptLine[] => [
   line([strong("If pain: "), link("Solution", "solution", "solution")], indent),
-  line([strong("If no pain: "), link("Graceful Exit", "graceful-exit", "exit")], indent),
+  line([strong("If no pain: "), link("Exit", "graceful-exit", "exit")], indent),
 ];
 
 const aiSystemBranch = (yesIndent = 1): ScriptContent[] => [
@@ -183,10 +184,10 @@ export const dialogueBlocks: DialogueBlock[] = [
   },
   {
     id: "rush",
-    title: "Rush",
+    title: "Busy",
     layoutArea: "rush",
     script: [
-      line([accent("Rush", "rush")]),
+      line([accent("Busy", "rush")]),
       line([text("Hey you sound super busy, I can always call back another time.")]),
       line([
         strong("I'm busy, call later: "),
@@ -213,8 +214,8 @@ export const dialogueBlocks: DialogueBlock[] = [
     ],
     buttonRows: [
       [
-        { label: "What are you talking about (Confusion)", target: "confusion" },
-        { label: "That's the Spot were in", target: "spot-were-in" },
+        { label: "What are you talking about? (confusion)", target: "confusion" },
+        { label: "That's the spot", target: "spot-were-in" },
       ],
       [
         { label: "It's different with AI", target: "different-ai" },
@@ -402,21 +403,21 @@ export const dialogueBlocks: DialogueBlock[] = [
         text("We use AI too, it's great for productivity. But our team is human lead: Project manager. Creative lead. Creative team. You get the output you want, high quality and brand aware, because humans care when AI can't. But it sounds like that's what you got going on right now, you have designers running AI. The difference, though, is we're 3 thousand a month. If you could snap your fingers and make this switch to us, would it save you money?"),
       ], 1),
       line([strong("Yes: "), link("Close", "close", "close")], 2),
-      line([strong("No: "), link("Graceful Exit", "graceful-exit", "exit")], 2),
+      line([strong("No: "), link("Exit", "graceful-exit", "exit")], 2),
       line([
         strong("If not using AI: "),
         text("We give you a full team: Project manager. Creative lead. Creative team. That can fluctuate with demand so you never hit capacity. If you could snap your fingers and make that switch, would it improve your work flow?"),
       ], 1),
       line([strong("Yes: "), link("Close", "close", "close")], 2),
-      line([strong("No: "), link("Graceful Exit", "graceful-exit", "exit")], 2),
+      line([strong("No: "), link("Exit", "graceful-exit", "exit")], 2),
     ],
   },
   {
     id: "rush-bullet",
-    title: "Rush Bullet",
+    title: "Impatient",
     layoutArea: "rush-bullet",
     script: [
-      line([accent("Rush Bullet:", "rush")]),
+      line([accent("Impatient:", "rush")]),
       line([text("Then let me just cut to the chase and this will be the last thing I say:")]),
       line([
         text("We're interested in solving genuine problems for marketing teams. If you're using designer salaries to pay designers to prompt AI and revise output, which is expensive, or you wish you could fluctuate headcount with demand, so your design team never bottlenecks, then maybe there's something I can do for you."),
@@ -447,10 +448,10 @@ export const dialogueBlocks: DialogueBlock[] = [
   },
   {
     id: "graceful-exit",
-    title: "Graceful Exit",
+    title: "Exit",
     layoutArea: "graceful-exit",
     script: [
-      line([accent("Graceful Exit:", "exit")]),
+      line([accent("Exit:", "exit")]),
       line([
         text("Well hey, sounds like you got a good thing going which means were probably not a good fit. So, I really appreciate your time, and I hope you have a great day from here on out, but I'll let you go. Take care [[Name]]"),
       ]),
@@ -483,10 +484,11 @@ export function getAllTargets(block: DialogueBlock) {
 
 export function getMissingTargets(blocks: DialogueBlock[]) {
   const ids = new Set(blocks.map((block) => block.id));
+  const titles = new Set(blocks.map((block) => block.title.trim()).filter(Boolean));
 
   return blocks.flatMap((block) =>
     getAllTargets(block)
-      .filter((target) => !ids.has(target.target))
+      .filter((target) => !ids.has(target.target) && !titles.has(target.label.trim()) && !titles.has(target.target.trim()))
       .map((target) => ({
         from: block.id,
         label: target.label,
@@ -494,6 +496,10 @@ export function getMissingTargets(blocks: DialogueBlock[]) {
       })),
   );
 }
+
+
+
+
 
 
 

@@ -1,48 +1,58 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { isSupabaseConfigured, supabase } from "../supabaseClient";
 
-export type CompanyMembership = {
-  company_id: string;
-  company_name: string;
-  company_slug: string;
+export type TeamMembership = {
+  team_id: string;
+  team_name: string;
+  team_slug: string;
   display_name: string;
-  member_role: "owner" | "admin" | "editor" | "rep";
-  company_brand: Record<string, unknown>;
+  member_role: "admin" | "rep";
+  team_brand: Record<string, unknown>;
 };
 
-export function useClosedCallAuth() {
+export function useTeamTownAuth() {
   const [session, setSession] = useState<Session | null>(null);
-  const [membership, setMembership] = useState<CompanyMembership | null>(null);
+  const [membership, setMembership] = useState<TeamMembership | null>(null);
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [authError, setAuthError] = useState("");
+  const [isAccessDenied, setIsAccessDenied] = useState(false);
+  const loadedUserIdRef = useRef<string | null>(null);
 
   async function loadMembership(nextSession: Session | null) {
     setSession(nextSession);
-    setMembership(null);
+    setIsAccessDenied(false);
 
     if (!nextSession || !supabase) {
+      loadedUserIdRef.current = null;
+      setMembership(null);
       setIsLoading(false);
       return;
     }
 
-    const { data, error } = await supabase.rpc("claim_company_membership");
+    loadedUserIdRef.current = nextSession.user.id;
+    setMembership(null);
+
+    const { data, error } = await supabase.rpc("claim_team_membership");
 
     if (error) {
+      setIsAccessDenied(false);
       setAuthError(error.message);
       setIsLoading(false);
       return;
     }
 
-    const [claimedMembership] = (data ?? []) as CompanyMembership[];
+    const [claimedMembership] = (data ?? []) as TeamMembership[];
 
     if (!claimedMembership) {
-      setAuthError("Your Google account is not enabled for this ClosedCall workspace yet.");
+      setIsAccessDenied(true);
+      setAuthError("Your Google account is not enabled for this TeamTree workspace yet.");
       setIsLoading(false);
       return;
     }
 
     setAuthError("");
+    setIsAccessDenied(false);
     setMembership(claimedMembership);
     setIsLoading(false);
   }
@@ -68,6 +78,12 @@ export function useClosedCallAuth() {
         return;
       }
 
+      const nextUserId = nextSession?.user?.id ?? null;
+      if (nextUserId && nextUserId === loadedUserIdRef.current) {
+        setSession(nextSession);
+        return;
+      }
+
       setIsLoading(true);
       void loadMembership(nextSession);
     });
@@ -80,19 +96,28 @@ export function useClosedCallAuth() {
 
   async function signInWithGoogle() {
     if (!supabase) {
+      setIsAccessDenied(false);
       setAuthError("Add Supabase env vars before using Google login.");
       return;
     }
 
-    setAuthError("");
+    if (!isAccessDenied) {
+      setAuthError("");
+      setIsAccessDenied(false);
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
+        queryParams: {
+          prompt: "select_account",
+        },
         redirectTo: window.location.origin,
       },
     });
 
     if (error) {
+      setIsAccessDenied(false);
       setAuthError(error.message);
     }
   }
@@ -103,12 +128,15 @@ export function useClosedCallAuth() {
     }
 
     await supabase.auth.signOut();
+    loadedUserIdRef.current = null;
     setSession(null);
     setMembership(null);
+    setIsAccessDenied(false);
   }
 
   return {
     authError,
+    isAccessDenied,
     isConfigured: isSupabaseConfigured,
     isLoading,
     membership,

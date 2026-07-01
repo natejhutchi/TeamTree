@@ -1,0 +1,881 @@
+.panel-edit-toolbar {
+  position: absolute;
+  z-index: 4;
+  pointer-events: auto;
+}
+
+.panel-edit-toolbar .text-edit-toolbar {
+  transform: none;
+}
+
+.team-info-edit-toolbar {
+  top: 18px;
+  right: 34px;
+  width: calc(var(--side-panel-width) - 70px);
+}
+
+.objection-edit-toolbar {
+  top: 18px;
+  left: 34px;
+  width: calc(var(--side-panel-width) - 70px);
+}
+
+.bottom-info-edit-toolbar {
+  left: 50%;
+  top: -26px;
+  width: min(720px, calc(var(--bottom-panel-width) - 80px));
+  transform: translateX(-50%);
+}
+
+.team-info-response,
+.objection-response {
+  border-bottom: 0;
+}
+
+.panel-body-editor {
+  min-height: 1.4em;
+  outline: 0;
+}
+
+.panel-body-editor:focus {
+  outline: 0;
+}
+
+.bottom-info-clients > .panel-body-editor,
+.bottom-info-clients > div:not(.panel-body-editor) {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  width: 100%;
+}
+
+.bottom-info-clients .panel-body-editor span {
+  white-space: nowrap;
+}
+
+.team-info-panel .panel-body-editor,
+.objection-panel .panel-body-editor,
+.bottom-info-panel .panel-body-editor {
+  color: inherit;
+}
+
+.team-info-panel .editable-script-line,
+.objection-panel .editable-script-line {
+  margin-bottom: 6px;
+  font-size: 0.92rem;
+  line-height: 1.42;
+}
+
+.team-info-panel .panel-body-editor > .editable-script-line:first-child,
+.objection-panel .panel-body-editor > .editable-script-line:first-child {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.bottom-info-card .editable-script-line {
+  font-size: 0.84rem;
+  line-height: 1.36;
+}
+
+.bottom-info-card .panel-body-editor > .editable-script-line:first-child {
+  color: #263c25;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+
+
+.team-info-edit-toolbar,
+.objection-edit-toolbar {
+  top: 50%;
+  width: 24px;
+  transform: translateY(-50%);
+}
+
+.team-info-edit-toolbar {
+  right: 4px;
+}
+
+.objection-edit-toolbar {
+  left: 4px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar,
+.objection-edit-toolbar .text-edit-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 24px;
+  margin: 0;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar-left,
+.team-info-edit-toolbar .text-edit-toolbar-center,
+.team-info-edit-toolbar .text-color-tools,
+.objection-edit-toolbar .text-edit-toolbar-left,
+.objection-edit-toolbar .text-edit-toolbar-center,
+.objection-edit-toolbar .text-color-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar button,
+.objection-edit-toolbar .text-edit-toolbar button {
+  width: 18px;
+  height: 18px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar svg,
+.objection-edit-toolbar .text-edit-toolbar svg {
+  width: 13px;
+  height: 13px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar .text-color-swatch,
+.objection-edit-toolbar .text-edit-toolbar .text-color-swatch {
+  width: 12px;
+  height: 12px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar-left,
+.objection-edit-toolbar .text-edit-toolbar-left {
+  display: none;
+}
+
+/* Final panel edit refinements */
+.team-info-edit-toolbar {
+  right: -34px;
+}
+
+.objection-edit-toolbar {
+  left: -34px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar-left,
+.objection-edit-toolbar .text-edit-toolbar-left,
+.bottom-info-edit-toolbar .text-edit-toolbar-left {
+  display: none;
+}
+
+.team-info-panel .editable-script-line,
+.objection-panel .editable-script-line {
+  margin-bottom: 4px;
+  font-size: 0.78rem;
+  line-height: 1.34;
+}
+
+.team-info-panel .panel-body-editor > .editable-script-line:first-child,
+.objection-panel .panel-body-editor > .editable-script-line:first-child {
+  font-size: 0.86rem;
+  line-height: 1.24;
+  font-weight: 800;
+}
+
+.bottom-info-clients > .panel-body-editor {
+  max-width: 100%;
+  text-align: center;
+}
+
+@media (max-width: 1180px) {
+  .team-info-panel .editable-script-line,
+  .objection-panel .editable-script-line {
+    margin-bottom: 3px;
+    font-size: 0.58rem;
+    line-height: 1.3;
+  }
+
+  .team-info-panel .panel-body-editor > .editable-script-line:first-child,
+  .objection-panel .panel-body-editor > .editable-script-line:first-child {
+    font-size: 0.66rem;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 900px) {
+  .team-info-panel .editable-script-line,
+  .objection-panel .editable-script-line {
+    font-size: 0.52rem;
+  }
+
+  .team-info-panel .panel-body-editor > .editable-script-line:first-child,
+  .objection-panel .panel-body-editor > .editable-script-line:first-child {
+    font-size: 0.6rem;
+  }
+}
+
+
+.team-info-panel .tiptap-panel-editor,
+.objection-panel .tiptap-panel-editor,
+.team-info-panel .tiptap-panel-editor p,
+.objection-panel .tiptap-panel-editor p,
+.team-info-panel .team-info-response > div p,
+.objection-panel .objection-response > div p {
+  margin: 0 0 4px;
+  font-size: 0.78rem;
+  line-height: 1.34;
+}
+
+.team-info-panel .tiptap-panel-editor p:first-child,
+.objection-panel .tiptap-panel-editor p:first-child,
+.team-info-panel .team-info-response > div p:first-child,
+.objection-panel .objection-response > div p:first-child {
+  font-size: 0.86rem;
+  line-height: 1.24;
+  font-weight: 800;
+}
+
+.team-info-panel .tiptap-panel-editor h3,
+.objection-panel .tiptap-panel-editor h3 {
+  margin: 10px 0 4px;
+  color: var(--color-ink);
+  font-size: 0.86rem;
+  line-height: 1.24;
+  font-weight: 800;
+}
+
+
+@media (max-width: 1180px) {
+  .team-info-panel .tiptap-panel-editor,
+  .objection-panel .tiptap-panel-editor,
+  .team-info-panel .tiptap-panel-editor p,
+  .objection-panel .tiptap-panel-editor p,
+  .team-info-panel .team-info-response > div p,
+  .objection-panel .objection-response > div p {
+    font-size: 0.58rem;
+    line-height: 1.3;
+  }
+
+  .team-info-panel .tiptap-panel-editor p:first-child,
+  .objection-panel .tiptap-panel-editor p:first-child,
+  .team-info-panel .team-info-response > div p:first-child,
+  .objection-panel .objection-response > div p:first-child {
+    font-size: 0.66rem;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 900px) {
+  .team-info-panel .tiptap-panel-editor,
+  .objection-panel .tiptap-panel-editor,
+  .team-info-panel .tiptap-panel-editor p,
+  .objection-panel .tiptap-panel-editor p,
+  .team-info-panel .team-info-response > div p,
+  .objection-panel .objection-response > div p {
+    font-size: 0.52rem;
+  }
+
+  .team-info-panel .tiptap-panel-editor p:first-child,
+  .objection-panel .tiptap-panel-editor p:first-child,
+  .team-info-panel .team-info-response > div p:first-child,
+  .objection-panel .objection-response > div p:first-child {
+    font-size: 0.6rem;
+  }
+}
+/* Final toolbar positioning pass */
+.bottom-info-edit-toolbar .text-edit-toolbar {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+}
+
+.bottom-info-edit-toolbar .text-edit-toolbar-center {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.bottom-info-edit-toolbar .text-color-tools {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.team-info-edit-toolbar,
+.objection-edit-toolbar {
+  width: 24px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar,
+.objection-edit-toolbar .text-edit-toolbar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 24px;
+  min-height: 245px;
+  gap: 0;
+}
+
+.team-info-edit-toolbar .text-color-tools,
+.objection-edit-toolbar .text-color-tools {
+  order: 1;
+  margin-bottom: 28px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar-center,
+.objection-edit-toolbar .text-edit-toolbar-center {
+  order: 2;
+}
+
+.bottom-info-clients > .panel-body-editor[contenteditable="true"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.bottom-info-clients > .panel-body-editor[contenteditable="true"] span {
+  white-space: normal;
+}
+
+/* Final side/bottom toolbar correction */
+.team-info-edit-toolbar,
+.objection-edit-toolbar {
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  height: var(--side-panel-height);
+  transform: none;
+}
+
+.team-info-edit-toolbar {
+  right: -30px;
+}
+
+.objection-edit-toolbar {
+  left: -30px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar,
+.objection-edit-toolbar .text-edit-toolbar {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+}
+
+.team-info-edit-toolbar .text-color-tools,
+.objection-edit-toolbar .text-color-tools {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  transform: translateX(-50%);
+}
+
+.team-info-edit-toolbar .text-edit-toolbar-center,
+.objection-edit-toolbar .text-edit-toolbar-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transform: translate(-50%, -50%);
+}
+
+.team-info-edit-toolbar .text-edit-toolbar button,
+.objection-edit-toolbar .text-edit-toolbar button {
+  width: 22px;
+  height: 22px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar svg,
+.objection-edit-toolbar .text-edit-toolbar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.team-info-edit-toolbar .text-edit-toolbar .text-color-swatch,
+.objection-edit-toolbar .text-edit-toolbar .text-color-swatch {
+  width: 14px;
+  height: 14px;
+}
+
+.bottom-info-edit-toolbar .text-edit-toolbar-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bottom-info-edit-toolbar .text-color-tools {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.bottom-info-clients > .panel-body-editor[contenteditable="true"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.bottom-info-clients > .panel-body-editor[contenteditable="true"] * {
+  white-space: nowrap;
+}
+
+/* Toolbar edge-gap tuning */
+.team-info-edit-toolbar .text-color-tools,
+.objection-edit-toolbar .text-color-tools {
+  top: 18px;
+}
+
+.bottom-info-edit-toolbar .text-color-tools {
+  transform: translateX(28px);
+}
+
+/* Final bottom toolbar edge alignment */
+.bottom-info-edit-toolbar {
+  width: var(--bottom-panel-width);
+}
+
+.bottom-info-edit-toolbar .text-edit-toolbar {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+}
+
+.bottom-info-edit-toolbar .text-edit-toolbar-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translate(-50%, -50%);
+}
+
+.bottom-info-edit-toolbar .text-color-tools {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transform: translateY(-50%);
+}
+
+/* Final bottom panel fixed content caps */
+.bottom-info-card {
+  box-sizing: border-box;
+  height: 90px;
+  max-height: 90px;
+  overflow: hidden;
+}
+
+.bottom-info-card .panel-body-editor.is-capped-editor {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.bottom-info-card .panel-body-editor.is-capped-editor * {
+  max-width: 100%;
+}
+
+.bottom-info-clients {
+  overflow: hidden;
+}
+
+.bottom-info-clients > .panel-body-editor[contenteditable="true"] {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Strict three-line cap for editable bottom information cards */
+.bottom-info-card {
+  height: 88px;
+  max-height: 88px;
+  min-height: 88px;
+  padding: 10px 12px;
+}
+
+.bottom-info-card .panel-body-editor.is-capped-editor {
+  height: 68px;
+  max-height: 68px;
+  min-height: 0;
+  overflow: hidden;
+  line-height: 1.32;
+}
+
+.bottom-info-card .panel-body-editor.is-capped-editor .editable-script-line {
+  margin-bottom: 3px;
+  line-height: 1.28;
+}
+
+.bottom-info-card .panel-body-editor.is-capped-editor .editable-script-line:first-child {
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+/* Prevent bottom card editable lines from bleeding into neighboring/title text */
+.bottom-info-card .panel-body-editor.is-capped-editor,
+.bottom-info-card .panel-body-editor.is-capped-editor .editable-script-line,
+.bottom-info-card .panel-body-editor.is-capped-editor .editable-script-line * {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.bottom-info-card .panel-body-editor.is-capped-editor .editable-script-line {
+  display: block;
+  text-overflow: clip;
+}
+
+/* Bottom cards use separate title/body editable regions */
+.bottom-info-card {
+  display: grid;
+  grid-template-rows: 20px 48px;
+  align-content: start;
+  row-gap: 4px;
+  height: 88px;
+  min-height: 88px;
+  max-height: 88px;
+  overflow: hidden;
+}
+
+.bottom-info-card > div:first-child,
+.bottom-info-card > .panel-body-editor:first-child {
+  display: block;
+  height: 20px;
+  max-height: 20px;
+  overflow: hidden;
+  color: #263c25;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.bottom-info-card > div:first-child .editable-script-line,
+.bottom-info-card > .panel-body-editor:first-child .editable-script-line {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.bottom-info-card > div:nth-child(2),
+.bottom-info-card > .panel-body-editor:nth-child(2),
+.bottom-info-card > .panel-body-editor.is-capped-editor:nth-child(2) {
+  display: block;
+  height: 48px;
+  max-height: 48px;
+  min-height: 0;
+  overflow: hidden;
+  font-size: 0.84rem;
+  line-height: 1.3;
+}
+
+.bottom-info-card > div:nth-child(2) .editable-script-line,
+.bottom-info-card > .panel-body-editor:nth-child(2) .editable-script-line {
+  margin: 0 0 2px;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+/* Bottom card body is exactly three lines and cannot visually overflow */
+.bottom-info-card > div:nth-child(2),
+.bottom-info-card > .panel-body-editor:nth-child(2),
+.bottom-info-card > .panel-body-editor.is-capped-editor:nth-child(2) {
+  height: 48px;
+  max-height: 48px;
+  overflow: hidden;
+}
+
+/* Normalize raw browser-created editable rows so typed text lines up with preset script rows. */
+/* Side panels: edit mode and view mode must use identical typography. */
+.team-info-panel .tiptap-panel-editor,
+.objection-panel .tiptap-panel-editor,
+.team-info-panel .tiptap-panel-editor p,
+.objection-panel .tiptap-panel-editor p {
+  margin: 0 0 4px;
+  font-size: 0.78rem;
+  line-height: 1.34;
+}
+
+.team-info-panel .tiptap-panel-editor h3,
+.objection-panel .tiptap-panel-editor h3,
+.team-info-panel .tiptap-panel-editor p:first-child,
+.objection-panel .tiptap-panel-editor p:first-child {
+  margin: 10px 0 4px;
+  color: var(--color-ink);
+  font-size: 0.86rem;
+  line-height: 1.24;
+  font-weight: 800;
+}
+
+.team-info-panel .tiptap-panel-editor .inline-link,
+.objection-panel .tiptap-panel-editor .inline-link {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+@media (max-width: 1180px) {
+  .team-info-panel .tiptap-panel-editor,
+  .objection-panel .tiptap-panel-editor,
+  .team-info-panel .tiptap-panel-editor p,
+  .objection-panel .tiptap-panel-editor p {
+    font-size: 0.58rem;
+    line-height: 1.3;
+  }
+
+  .team-info-panel .tiptap-panel-editor h3,
+  .objection-panel .tiptap-panel-editor h3,
+  .team-info-panel .tiptap-panel-editor p:first-child,
+  .objection-panel .tiptap-panel-editor p:first-child {
+    font-size: 0.66rem;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 900px) {
+  .team-info-panel .tiptap-panel-editor,
+  .objection-panel .tiptap-panel-editor,
+  .team-info-panel .tiptap-panel-editor p,
+  .objection-panel .tiptap-panel-editor p {
+    font-size: 0.52rem;
+  }
+
+  .team-info-panel .tiptap-panel-editor h3,
+  .objection-panel .tiptap-panel-editor h3,
+  .team-info-panel .tiptap-panel-editor p:first-child,
+  .objection-panel .tiptap-panel-editor p:first-child {
+    font-size: 0.6rem;
+  }
+}
+
+/* Bottom panel cells are now single Tiptap sheets, matching edit and view mode. */
+.bottom-info-panel {
+  padding-bottom: 18px;
+}
+
+.bottom-info-card {
+  display: block;
+  box-sizing: border-box;
+  height: 90px;
+  max-height: 90px;
+  min-height: 90px;
+  overflow: hidden;
+}
+
+.bottom-info-card > .tiptap-panel-editor,
+.bottom-info-card > .panel-body-editor {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  color: inherit;
+  font-size: 0.84rem;
+  line-height: 1.32;
+}
+
+.bottom-info-card .tiptap-panel-editor p,
+.bottom-info-card .panel-body-editor p {
+  margin: 0 0 3px;
+  line-height: 1.32;
+}
+
+.bottom-info-card .tiptap-panel-editor h3,
+.bottom-info-card .panel-body-editor h3,
+.bottom-info-card .tiptap-panel-editor p:first-child,
+.bottom-info-card .panel-body-editor p:first-child {
+  margin: 0 0 3px;
+  color: #263c25;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.bottom-info-card .inline-link {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+@media (max-width: 1180px) {
+  .bottom-info-card > .tiptap-panel-editor,
+  .bottom-info-card > .panel-body-editor {
+    font-size: 0.68rem;
+    line-height: 1.28;
+  }
+
+  .bottom-info-card .tiptap-panel-editor h3,
+  .bottom-info-card .panel-body-editor h3,
+  .bottom-info-card .tiptap-panel-editor p:first-child,
+  .bottom-info-card .panel-body-editor p:first-child {
+    font-size: 0.74rem;
+  }
+}
+
+/* Final override: bottom cells are one full-height Tiptap editor, not split title/body. */
+.bottom-info-card {
+  display: block !important;
+  grid-template-rows: none !important;
+  align-content: stretch !important;
+  row-gap: 0 !important;
+  height: 90px;
+  min-height: 90px;
+  max-height: 90px;
+  padding: 10px 12px;
+  overflow: hidden;
+}
+
+.bottom-info-card > .tiptap-panel-editor,
+.bottom-info-card > .panel-body-editor,
+.bottom-info-card > div.tiptap-panel-editor:first-child,
+.bottom-info-card > .panel-body-editor:first-child {
+  display: block !important;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  color: inherit;
+  font-size: 0.84rem;
+  font-weight: 400;
+  line-height: 1.32;
+  white-space: normal !important;
+}
+
+.bottom-info-card > .tiptap-panel-editor p,
+.bottom-info-card > .panel-body-editor p,
+.bottom-info-card > .tiptap-panel-editor h3,
+.bottom-info-card > .panel-body-editor h3,
+.bottom-info-card > div.tiptap-panel-editor:first-child p,
+.bottom-info-card > div.tiptap-panel-editor:first-child h3,
+.bottom-info-card > .panel-body-editor:first-child p,
+.bottom-info-card > .panel-body-editor:first-child h3 {
+  overflow: hidden;
+  white-space: normal !important;
+  text-overflow: clip;
+}
+
+.bottom-info-card > .tiptap-panel-editor h3,
+.bottom-info-card > .panel-body-editor h3,
+.bottom-info-card > .tiptap-panel-editor p:first-child,
+.bottom-info-card > .panel-body-editor p:first-child {
+  margin: 0 0 3px;
+  color: #263c25;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* Tiptap EditorContent wrapper inside bottom cards must fill the rectangle. */
+.bottom-info-card > div[data-text-key="tiptap-body"],
+.bottom-info-card > div[data-text-key="tiptap-body"]:first-child {
+  display: block !important;
+  box-sizing: border-box;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  white-space: normal !important;
+}
+
+.bottom-info-card > div[data-text-key="tiptap-body"] > .tiptap-panel-editor,
+.bottom-info-card > div[data-text-key="tiptap-body"] > .panel-body-editor {
+  display: block !important;
+  box-sizing: border-box;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  color: inherit;
+  font-size: 0.84rem;
+  font-weight: 400;
+  line-height: 1.32;
+  white-space: normal !important;
+}
+
+/* Hard override for Tiptap's React wrapper in bottom cards. */
+.bottom-info-card > div.tiptap-editor-shell,
+.bottom-info-card > div.tiptap-editor-shell:first-child,
+.bottom-info-card > div.tiptap-editor-shell:nth-child(2) {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  white-space: normal !important;
+}
+
+.bottom-info-card > div.tiptap-editor-shell > .tiptap-panel-editor,
+.bottom-info-card > div.tiptap-editor-shell > .panel-body-editor {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  color: inherit !important;
+  font-size: 0.84rem !important;
+  font-weight: 400 !important;
+  line-height: 1.32 !important;
+  white-space: normal !important;
+}
+
+
+/* Bottom panel view/edit content must wrap inside each fixed rectangle. */
+.bottom-info-card,
+.bottom-info-card * {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.bottom-info-card .tiptap-panel-editor,
+.bottom-info-card .panel-body-editor,
+.bottom-info-card .tiptap-panel-editor *,
+.bottom-info-card .panel-body-editor * {
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+}
