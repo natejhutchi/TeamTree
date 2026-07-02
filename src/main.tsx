@@ -193,13 +193,15 @@ function App({ googleDisplayName, membership, onLogout, userEmail }: { googleDis
   };
 
   return (
-    <div className={`app-viewport ${isModalOpen ? "is-modal-open" : ""} ${edit.isEditMode ? "is-edit-mode" : ""}`} style={{ "--canvas-x": `${viewport.transform.x}px`, "--canvas-y": `${viewport.transform.y}px`, "--tree-scale": viewport.treeScale } as CSSProperties}>
+    <div className={`app-viewport ${isModalOpen ? "is-modal-open" : ""} ${edit.isEditMode ? "is-edit-mode" : ""} ${edit.isSavingEditMode ? "is-saving-edit-mode" : ""}`} style={{ "--canvas-x": `${viewport.transform.x}px`, "--canvas-y": `${viewport.transform.y}px`, "--tree-scale": viewport.treeScale } as CSSProperties}>
       <ViewportControls
         canUndo={edit.isEditMode ? edit.canUndoEdit : canUndo}
         canRedo={edit.isEditMode ? edit.canRedoEdit : false}
         goToHistoryIndex={goToHistoryIndex}
         historyIndex={historyIndex}
         isEditMode={edit.isEditMode}
+        isSavingEditMode={edit.isSavingEditMode}
+        editSaveError={edit.editSaveError}
         canEditActiveTree={Boolean(activeTree?.canEdit)}
         navigateToBlock={navigateToBlock}
         starterBlockId={edit.starterBlockId}
@@ -323,7 +325,6 @@ createRoot(document.getElementById("root")!).render(
     <Root />
   </StrictMode>,
 );
-
 
 
 

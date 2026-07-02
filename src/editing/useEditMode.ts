@@ -40,6 +40,8 @@ export function useEditMode({
   viewportTransform: CanvasTransform;
 }) {
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isSavingEditMode, setIsSavingEditMode] = useState(false);
+  const [editSaveError, setEditSaveError] = useState("");
   const [deletedBlockIds, setDeletedBlockIds] = useState<Set<string>>(() => new Set());
   const [deletedButtonKeys] = useState<Set<string>>(() => new Set());
   const [pendingEditDelete, setPendingEditDelete] = useState<PendingEditDelete>(null);
@@ -79,6 +81,7 @@ export function useEditMode({
     setRedoHistory([]);
     setTiptapHistoryState({ canUndo: false, canRedo: false });
     setPendingEditDelete(null);
+    setEditSaveError("");
     lastSerializedTreeDataRef.current = JSON.stringify(nextTreeData);
   }, [treeDataKey]);
 
@@ -138,12 +141,29 @@ export function useEditMode({
     return `Title-${titleIndex}`;
   }
 
-  function toggleEditMode() {
+  async function toggleEditMode() {
+    if (isSavingEditMode) return;
+    setEditSaveError("");
+
     if (isEditMode) {
       if (treeDataKey && onTreeDataChange && lastSerializedTreeDataRef.current !== serializedEditTreeData) {
         const nextData = JSON.parse(serializedEditTreeData) as TeamTreeData;
-        lastSerializedTreeDataRef.current = serializedEditTreeData;
-        void Promise.resolve(onTreeDataChange(nextData));
+        setIsSavingEditMode(true);
+
+        try {
+          const didSave = await Promise.resolve(onTreeDataChange(nextData));
+          if (didSave === false) {
+            setEditSaveError("Save failed. Check your connection. Contact support if this problem persists.");
+            return;
+          }
+
+          lastSerializedTreeDataRef.current = serializedEditTreeData;
+        } catch {
+          setEditSaveError("Save failed. Check your connection. Contact support if this problem persists.");
+          return;
+        } finally {
+          setIsSavingEditMode(false);
+        }
       }
 
       setIsEditMode(false);
@@ -528,6 +548,8 @@ export function useEditMode({
     redoHistory,
     getAvailableSides,
     isEditMode,
+    isSavingEditMode,
+    editSaveError,
     pendingEditDelete,
     requestDeleteBlock,
     redoEdit,

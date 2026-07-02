@@ -512,19 +512,7 @@ export function DialogueCard({
     onUpdateBlockOverride(block.id, { highlightIndex: nextHighlightIndex });
     setHighlightFlash((currentFlash) => ({ index: nextHighlightIndex, key: currentFlash.key + 1 }));
 
-    requestAnimationFrame(() => {
-      const editorRoot = document.getElementById(block.id)?.querySelector<HTMLElement>(".tiptap-block-editor");
-      if (!editorRoot) return;
 
-      const highlightableElements = getHighlightableBodyElements(editorRoot, transferTitleTargets);
-      const selectedIndex = highlightableElements.length > 0 ? nextHighlightIndex % highlightableElements.length : 0;
-      const targetElement = highlightableElements[selectedIndex];
-      if (!targetElement) return;
-
-      targetElement.classList.remove("is-flashing");
-      void targetElement.offsetWidth;
-      targetElement.classList.add("is-flashing");
-    });
   };
   const handleBodyKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isEditMode || event.key !== "Enter" || event.nativeEvent.isComposing) return;

@@ -115,3 +115,34 @@
   width: 32px;
   height: 32px;
 }
+
+.viewport-edit-button.is-saving svg {
+  animation: viewport-save-spin 0.85s linear infinite;
+}
+
+.edit-save-warning {
+  position: absolute;
+  right: 38px;
+  bottom: 0;
+  width: min(290px, 62vw);
+  padding: 8px 10px;
+  border: 1px solid rgba(126, 45, 35, 0.45);
+  border-radius: 10px;
+  background: rgba(247, 230, 218, 0.94);
+  color: #7e2d23;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  box-shadow: 0 12px 26px rgba(43, 58, 38, 0.15);
+  pointer-events: none;
+}
+
+.app-viewport.is-saving-edit-mode .text-edit-toolbar button {
+  opacity: 0.36;
+  pointer-events: none;
+}
+
+@keyframes viewport-save-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

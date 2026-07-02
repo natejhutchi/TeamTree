@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { Extension } from "@tiptap/core";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
+import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
@@ -12,6 +14,7 @@ type TiptapToolbarCommand = {
 };
 
 let lastActiveTiptapEditor: any = null;
+const highlightPreviewPluginKey = new PluginKey("teamTownHighlightPreview");
 
 function dispatchTiptapHistoryState(editor: any) {
   window.dispatchEvent(new CustomEvent("teamtown:tiptap-history-state", {
@@ -22,25 +25,62 @@ function dispatchTiptapHistoryState(editor: any) {
   }));
 }
 
-function getHighlightableEditorElements(editorRoot: HTMLElement, transferButtonLabels: string[]) {
+function getHighlightableEditorNodes(editor: any, transferButtonLabels: string[]) {
   const transferButtonLabelSet = new Set(transferButtonLabels);
+  const nodes: Array<{ from: number; to: number }> = [];
 
-  return Array.from(editorRoot.children).filter((element): element is HTMLElement => {
-    if (!(element instanceof HTMLElement)) return false;
+  editor.state.doc.descendants((node: any, position: number, parent: any) => {
+    if (parent !== editor.state.doc) return false;
+    if (!["paragraph", "heading", "bulletList", "orderedList"].includes(node.type.name)) return false;
 
-    const text = (element.textContent ?? "").replace(/\u00a0/g, " ").trim();
+    const text = (node.textContent ?? "").replace(/\u00a0/g, " ").trim();
     if (!text) return false;
     if (transferButtonLabelSet.has(text)) return false;
 
-    return element.matches("p, h1, h2, h3, h4, h5, h6, ul, ol");
+    nodes.push({ from: position, to: position + node.nodeSize });
+    return false;
   });
+
+  return nodes;
 }
 
-function flashHighlightElement(element: HTMLElement) {
-  element.classList.remove("is-flashing", "is-highlight-preview");
-  void element.offsetWidth;
-  element.classList.add("is-flashing", "is-highlight-preview");
-}
+const HighlightPreview = Extension.create({
+  name: "teamTownHighlightPreview",
+
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: highlightPreviewPluginKey,
+        state: {
+          init: () => DecorationSet.empty,
+          apply(transaction, currentDecorations) {
+            const meta = transaction.getMeta(highlightPreviewPluginKey);
+
+            if (meta === "clear") {
+              return DecorationSet.empty;
+            }
+
+            if (meta && typeof meta.from === "number" && typeof meta.to === "number") {
+              return DecorationSet.create(transaction.doc, [
+                Decoration.node(meta.from, meta.to, {
+                  class: "is-flashing is-highlight-preview",
+                  "data-highlight-flash-key": String(meta.key ?? ""),
+                }),
+              ]);
+            }
+
+            return currentDecorations.map(transaction.mapping, transaction.doc);
+          },
+        },
+        props: {
+          decorations(state) {
+            return this.getState(state);
+          },
+        },
+      }),
+    ];
+  },
+});
 const TiptapIndent = Extension.create({
   name: "teamTownIndent",
 
@@ -138,6 +178,7 @@ export function TiptapBlockBody({
       StarterKit,
       TextStyle,
       Color,
+      HighlightPreview,
       TiptapIndent,
       TextAlign.configure({
         types: ["heading", "paragraph"],
@@ -172,24 +213,30 @@ export function TiptapBlockBody({
       return undefined;
     }
 
-    const flashTarget = () => {
-      const highlightableElements = getHighlightableEditorElements(editor.view.dom, transferButtonLabels);
-      const selectedIndex = highlightableElements.length > 0 ? Math.max(0, Math.floor(highlightIndex)) % highlightableElements.length : 0;
-      const targetElement = highlightableElements[selectedIndex];
+    const highlightableNodes = getHighlightableEditorNodes(editor, transferButtonLabels);
+    const selectedIndex = highlightableNodes.length > 0 ? Math.max(0, Math.floor(highlightIndex)) % highlightableNodes.length : 0;
+    const targetNode = highlightableNodes[selectedIndex];
 
-      if (!targetElement) {
-        return;
-      }
+    if (!targetNode) {
+      return undefined;
+    }
 
-      flashHighlightElement(targetElement);
-    };
+    editor.view.dispatch(editor.state.tr.setMeta(highlightPreviewPluginKey, "clear"));
 
-    flashTarget();
-    const timeoutId = window.setTimeout(flashTarget, 50);
-    const secondTimeoutId = window.setTimeout(flashTarget, 120);
+    const animationFrameId = window.requestAnimationFrame(() => {
+      editor.view.dispatch(editor.state.tr.setMeta(highlightPreviewPluginKey, {
+        from: targetNode.from,
+        key: highlightFlashKey,
+        to: targetNode.to,
+      }));
+    });
+    const clearTimeoutId = window.setTimeout(() => {
+      editor.view.dispatch(editor.state.tr.setMeta(highlightPreviewPluginKey, "clear"));
+    }, 5000);
+
     return () => {
-      window.clearTimeout(timeoutId);
-      window.clearTimeout(secondTimeoutId);
+      window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(clearTimeoutId);
     };
   }, [editor, highlightFlashKey, highlightIndex, transferButtonLabels]);
 

@@ -107,6 +107,20 @@ export function linkHtmlWithTransferButtons(html: string, transferTitleTargets: 
 
   const wrapper = document.createElement("div");
   wrapper.innerHTML = html;
+
+  function getExplicitTextColor(element: HTMLElement | null) {
+    let current: HTMLElement | null = element;
+
+    while (current && current !== wrapper) {
+      const color = current.style.color;
+      if (color) {
+        return color;
+      }
+      current = current.parentElement;
+    }
+
+    return "";
+  }
   const walker = document.createTreeWalker(wrapper, NodeFilter.SHOW_TEXT);
   const textNodes: Text[] = [];
 
@@ -144,6 +158,10 @@ export function linkHtmlWithTransferButtons(html: string, transferTitleTargets: 
       anchor.className = `inline-link ${getTransferToneClass(title)}`;
       anchor.dataset.targetBlockId = ids[0];
       anchor.href = "";
+      const explicitColor = getExplicitTextColor(node.parentElement);
+      if (explicitColor) {
+        anchor.style.color = explicitColor;
+      }
       anchor.textContent = title;
       fragment.append(anchor);
       cursor += title.length;
@@ -154,5 +172,4 @@ export function linkHtmlWithTransferButtons(html: string, transferTitleTargets: 
 
   return wrapper.innerHTML;
 }
-
 

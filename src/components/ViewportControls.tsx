@@ -7,6 +7,8 @@ export function ViewportControls({
   goToHistoryIndex,
   historyIndex,
   isEditMode,
+  isSavingEditMode = false,
+  editSaveError = "",
   navigateToBlock,
   starterBlockId,
   onToggleEditMode,
@@ -21,6 +23,8 @@ export function ViewportControls({
   goToHistoryIndex: (nextIndex: number) => void;
   historyIndex: number;
   isEditMode: boolean;
+  isSavingEditMode?: boolean;
+  editSaveError?: string;
   navigateToBlock: NavigateToBlock;
   starterBlockId: string;
   onToggleEditMode: () => void;
@@ -74,15 +78,17 @@ export function ViewportControls({
           <button
             aria-label="Add block"
             className="viewport-icon-button viewport-add-block-button"
+            disabled={isSavingEditMode}
             onClick={onAddBlock}
             type="button"
           >
             <Icon name="squarePlus" />
           </button>
         ) : null}
-        <button aria-label={isEditMode ? "Exit edit mode" : "Edit dialogue text"} className={`viewport-icon-button viewport-edit-button ${isEditMode ? "is-active" : ""}`} disabled={!canEditActiveTree && !isEditMode} onClick={onToggleEditMode} type="button">
-          <Icon name="squarePen" />
+        <button aria-label={isEditMode ? "Exit edit mode" : "Edit dialogue text"} className={`viewport-icon-button viewport-edit-button ${isEditMode ? "is-active" : ""} ${isSavingEditMode ? "is-saving" : ""}`} disabled={isSavingEditMode || (!canEditActiveTree && !isEditMode)} onClick={onToggleEditMode} type="button">
+          <Icon name={isSavingEditMode ? "loaderCircle" : "squarePen"} />
         </button>
+        {editSaveError ? <div className="edit-save-warning" role="status">{editSaveError}</div> : null}
       </div>
     </>
   );
