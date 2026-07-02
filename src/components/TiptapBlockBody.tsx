@@ -21,6 +21,26 @@ function dispatchTiptapHistoryState(editor: any) {
     },
   }));
 }
+
+function getHighlightableEditorElements(editorRoot: HTMLElement, transferButtonLabels: string[]) {
+  const transferButtonLabelSet = new Set(transferButtonLabels);
+
+  return Array.from(editorRoot.children).filter((element): element is HTMLElement => {
+    if (!(element instanceof HTMLElement)) return false;
+
+    const text = (element.textContent ?? "").replace(/\u00a0/g, " ").trim();
+    if (!text) return false;
+    if (transferButtonLabelSet.has(text)) return false;
+
+    return element.matches("p, h1, h2, h3, h4, h5, h6, ul, ol");
+  });
+}
+
+function flashHighlightElement(element: HTMLElement) {
+  element.classList.remove("is-flashing", "is-highlight-preview");
+  void element.offsetWidth;
+  element.classList.add("is-flashing", "is-highlight-preview");
+}
 const TiptapIndent = Extension.create({
   name: "teamTownIndent",
 
@@ -153,14 +173,7 @@ export function TiptapBlockBody({
     }
 
     const flashTarget = () => {
-      const transferButtonLabelSet = new Set(transferButtonLabels);
-      const highlightableElements = Array.from(editor.view.dom.children).filter((element): element is HTMLElement => {
-        if (!(element instanceof HTMLElement)) return false;
-        const text = (element.textContent ?? "").replace(/\u00a0/g, " ").trim();
-        if (!text) return false;
-        if (transferButtonLabelSet.has(text)) return false;
-        return element.matches("p, h1, h2, h3, h4, h5, h6, ul, ol, div");
-      });
+      const highlightableElements = getHighlightableEditorElements(editor.view.dom, transferButtonLabels);
       const selectedIndex = highlightableElements.length > 0 ? Math.max(0, Math.floor(highlightIndex)) % highlightableElements.length : 0;
       const targetElement = highlightableElements[selectedIndex];
 
@@ -168,14 +181,16 @@ export function TiptapBlockBody({
         return;
       }
 
-      targetElement.classList.remove("is-flashing");
-      void targetElement.offsetWidth;
-      targetElement.classList.add("is-flashing");
+      flashHighlightElement(targetElement);
     };
 
     flashTarget();
     const timeoutId = window.setTimeout(flashTarget, 50);
-    return () => window.clearTimeout(timeoutId);
+    const secondTimeoutId = window.setTimeout(flashTarget, 120);
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.clearTimeout(secondTimeoutId);
+    };
   }, [editor, highlightFlashKey, highlightIndex, transferButtonLabels]);
 
   useEffect(() => {
@@ -268,6 +283,7 @@ export function TiptapBlockBody({
 
   return <EditorContent className={editorWrapperClassName} editor={editor} data-text-key="tiptap-body" />;
 }
+
 
 
 

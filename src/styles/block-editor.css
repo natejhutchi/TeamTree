@@ -484,3 +484,9 @@ body.is-moving-block * {
   border-radius: 3px;
   animation: paragraph-flash 5000ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+.tiptap-block-editor .is-highlight-preview {
+  border-radius: 3px;
+  animation: paragraph-flash 5000ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
