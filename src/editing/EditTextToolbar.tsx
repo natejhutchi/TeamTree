@@ -1,4 +1,5 @@
 import { useState, type CSSProperties, type MouseEvent, type PointerEvent } from "react";
+import { HighlighterIcon } from "lucide-react";
 import { Icon, type IconName } from "../components/Icon";
 
 const toolbarColors = [
@@ -91,6 +92,7 @@ export function EditTextToolbar({
   onDelete,
   isStarterBlock = false,
   onSetStarterBlock,
+  onCycleHighlight,
   showHeadingControl = false,
 }: {
   canDelete: boolean;
@@ -98,6 +100,7 @@ export function EditTextToolbar({
   onDelete: () => void;
   isStarterBlock?: boolean;
   onSetStarterBlock?: () => void;
+  onCycleHighlight?: () => void;
   showHeadingControl?: boolean;
 }) {
   const [alignmentIndex, setAlignmentIndex] = useState(0);
@@ -127,6 +130,7 @@ export function EditTextToolbar({
       </div>
       <div className="text-edit-toolbar-center">
         {onSetStarterBlock ? <button aria-label={isStarterBlock ? "Starter block" : "Set as starter block"} className={isStarterBlock ? "is-starter-block" : "is-not-starter-block"} disabled={isStarterBlock} onPointerDown={(event) => runToolbarAction(event, onSetStarterBlock)} type="button"><Icon name="flag" /></button> : null}
+        {onCycleHighlight ? <button aria-label="Cycle highlight paragraph" className="highlight-cycle-button" onPointerDown={(event) => runToolbarAction(event, onCycleHighlight)} type="button"><HighlighterIcon aria-hidden="true" size={20} strokeWidth={1.75} /></button> : null}
         <button aria-label="Outdent text" onPointerDown={(event) => runToolbarAction(event, () => adjustScriptIndent(-1))} type="button"><Icon name="arrowLeftToLine" /></button>
         <button aria-label="Indent text" onPointerDown={(event) => runToolbarAction(event, () => adjustScriptIndent(1))} type="button"><Icon name="arrowRightToLine" /></button>
         <button aria-label="Bold text" onPointerDown={(event) => runToolbarAction(event, () => runEditCommand("bold"))} type="button"><Icon name="bold" /></button>
@@ -143,6 +147,12 @@ export function EditTextToolbar({
     </div>
   );
 }
+
+
+
+
+
+
 
 
 

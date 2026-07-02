@@ -210,6 +210,40 @@ function stripLeadingTitleHeadingFromHtml(html: string, title: string) {
 
   return wrapper.innerHTML;
 }
+function normalizeEmptyParagraphsForDisplay(html: string) {
+  if (!html.trim() || typeof document === "undefined") {
+    return html;
+  }
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html;
+
+  wrapper.querySelectorAll("p, h3").forEach((blockElement) => {
+    const isBlank = Array.from(blockElement.childNodes).every((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return (node.textContent ?? "").replace(/\u00a0/g, "").trim().length === 0;
+      }
+
+      if (node instanceof HTMLBRElement) {
+        return true;
+      }
+
+      return false;
+    });
+
+    if (!isBlank) {
+      return;
+    }
+
+    const spacer = document.createElement("div");
+    spacer.className = "tiptap-empty-line";
+    spacer.setAttribute("aria-hidden", "true");
+    spacer.innerHTML = "&nbsp;";
+    blockElement.replaceWith(spacer);
+  });
+
+  return wrapper.innerHTML;
+}
 function renderHtmlWithNames(value: string, names: NameValues) {
   const prospectName = names.prospectName.trim();
   const repName = names.repName.trim();
@@ -224,17 +258,41 @@ function renderHtmlWithNames(value: string, names: NameValues) {
     .replace(/\bPP\b/g, pp)
     .replace(/\bRR\b/g, rr);
 }
-function addFlashToFirstBodyElement(html: string, shouldFlash: boolean) {
+function getHighlightableBodyElements(wrapper: HTMLElement, transferTitleTargets: TransferTitleTargets) {
+  return Array.from(wrapper.children).filter((element): element is HTMLElement => {
+    if (!(element instanceof HTMLElement)) return false;
+    if (element.classList.contains("tiptap-empty-line")) return false;
+    if (element.matches(".editable-button-stack, .editable-button-row, .editable-body-choice")) return false;
+
+    const text = (element.textContent ?? "").replace(/\u00a0/g, " ").trim();
+    if (!text) return false;
+    if (transferTitleTargets[text]?.length === 1) return false;
+
+    return element.matches(".editable-script-line, .editable-muted-label, .script-list, p, h3, ul, ol");
+  });
+}
+
+function getHighlightableBodyCount(html: string, transferTitleTargets: TransferTitleTargets) {
+  if (typeof document === "undefined") return 0;
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html;
+  return getHighlightableBodyElements(wrapper, transferTitleTargets).length;
+}
+
+function addFlashToBodyElement(html: string, shouldFlash: boolean, highlightIndex: number, transferTitleTargets: TransferTitleTargets) {
   if (!shouldFlash || typeof document === "undefined") {
     return html;
   }
 
   const wrapper = document.createElement("div");
   wrapper.innerHTML = html;
-  const firstBodyElement = wrapper.querySelector<HTMLElement>(".editable-script-line, .editable-muted-label, .script-list, .editable-button-stack, p, h3, ul, ol");
+  const bodyElements = getHighlightableBodyElements(wrapper, transferTitleTargets);
+  const selectedIndex = bodyElements.length > 0 ? Math.max(0, Math.floor(highlightIndex)) % bodyElements.length : 0;
+  const targetElement = bodyElements[selectedIndex];
 
-  if (firstBodyElement) {
-    firstBodyElement.classList.add("is-flashing");
+  if (targetElement) {
+    targetElement.classList.add("is-flashing");
   }
 
   return wrapper.innerHTML;
@@ -432,8 +490,10 @@ export function DialogueCard({
   const showBusyButton = !noBusyButtonBlockIds.has(block.id) && !deletedButtonKeys.has(`${block.id}:busy`);
   const overrideBodyHtml = blockOverride?.bodyHtml;
   const editableBodyHtml = stripLeadingTitleHeadingFromHtml(overrideBodyHtml ?? getEditableBodyHtml({ block, buttonRows, customOptions, showBusyButton, busyTarget, busyLabel }), displayTitle);
-  const usesTiptapBody = isEditMode;
-  const hasScript = block.script && block.script.length > 0;
+  const highlightIndex = blockOverride?.highlightIndex ?? 0;
+  const transferButtonLabels = Object.keys(transferTitleTargets).filter((label) => transferTitleTargets[label]?.length === 1);
+  const [highlightFlash, setHighlightFlash] = useState({ index: highlightIndex, key: 0 });
+  const hasScript = block.script && block.script.length > 0;
   const [isStarterConfirmOpen, setIsStarterConfirmOpen] = useState(false);
   const pendingBlockDelete = pendingEditDelete?.type === "block" && pendingEditDelete.id === block.id ? pendingEditDelete : null;
   const hasOpenBlockPopup = Boolean(pendingBlockDelete || isStarterConfirmOpen);
@@ -443,6 +503,28 @@ export function DialogueCard({
 
   const requestBlockDelete = () => {
     onRequestDeleteBlock(block.id);
+  };
+
+  const cycleHighlightTarget = () => {
+    const highlightHtml = normalizeEmptyParagraphsForDisplay(renderHtmlWithNames(editableBodyHtml, names));
+    const highlightableCount = getHighlightableBodyCount(highlightHtml, transferTitleTargets);
+    const nextHighlightIndex = highlightableCount > 0 ? (highlightIndex + 1) % highlightableCount : 0;
+    onUpdateBlockOverride(block.id, { highlightIndex: nextHighlightIndex });
+    setHighlightFlash((currentFlash) => ({ index: nextHighlightIndex, key: currentFlash.key + 1 }));
+
+    requestAnimationFrame(() => {
+      const editorRoot = document.getElementById(block.id)?.querySelector<HTMLElement>(".tiptap-block-editor");
+      if (!editorRoot) return;
+
+      const highlightableElements = getHighlightableBodyElements(editorRoot, transferTitleTargets);
+      const selectedIndex = highlightableElements.length > 0 ? nextHighlightIndex % highlightableElements.length : 0;
+      const targetElement = highlightableElements[selectedIndex];
+      if (!targetElement) return;
+
+      targetElement.classList.remove("is-flashing");
+      void targetElement.offsetWidth;
+      targetElement.classList.add("is-flashing");
+    });
   };
   const handleBodyKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isEditMode || event.key !== "Enter" || event.nativeEvent.isComposing) return;
@@ -518,6 +600,8 @@ export function DialogueCard({
           onDelete={requestBlockDelete}
           isStarterBlock={block.id === starterBlockId}
           onSetStarterBlock={() => setIsStarterConfirmOpen(true)}
+          onCycleHighlight={cycleHighlightTarget}
+          showHeadingControl={true}
         />
       ) : null}
 
@@ -554,7 +638,7 @@ export function DialogueCard({
       >
         {isEditMode ? null : displayTitle}
       </h2>
-      {usesTiptapBody ? (
+      {isEditMode ? (
         <div
           className="block-content"
           onClick={(event) => event.stopPropagation()}
@@ -563,6 +647,9 @@ export function DialogueCard({
           <TiptapBlockBody
             html={editableBodyHtml}
             isFlashing={isFlashing}
+            highlightIndex={highlightFlash.key > 0 ? highlightFlash.index : highlightIndex}
+            highlightFlashKey={highlightFlash.key}
+            transferButtonLabels={transferButtonLabels}
             onChange={(bodyHtml) => onUpdateBlockOverride(block.id, { bodyHtml })}
           />
         </div>
@@ -570,9 +657,9 @@ export function DialogueCard({
         <div
           key={`${block.id}-${isEditMode ? "edit" : "view"}-${overrideBodyHtml ? "override" : "default"}`}
           ref={bodyRef}
-          className={`block-content ${isEditMode ? "block-body-editor" : ""}`}
+          className="block-content block-body-editor"
           contentEditable={isEditMode}
-          dangerouslySetInnerHTML={isEditMode ? undefined : { __html: addFlashToFirstBodyElement(linkHtmlWithTransferButtons(renderHtmlWithNames(editableBodyHtml, names), transferTitleTargets), isFlashing) }}
+          dangerouslySetInnerHTML={isEditMode ? undefined : { __html: addFlashToBodyElement(normalizeEmptyParagraphsForDisplay(linkHtmlWithTransferButtons(renderHtmlWithNames(editableBodyHtml, names), transferTitleTargets)), isFlashing, highlightIndex, transferTitleTargets) }}
           data-text-key={`${block.id}:body`}
           onPointerDown={(event) => { if (isEditMode) event.stopPropagation(); }}
           onClick={(event) => {
@@ -597,6 +684,22 @@ export function DialogueCard({
     </article>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

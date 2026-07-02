@@ -438,7 +438,7 @@ export function useEditMode({
     }));
   }
 
-  function updateBlockOverride(blockId: string, override: { title?: string; bodyHtml?: string }) {
+  function updateBlockOverride(blockId: string, override: { title?: string; bodyHtml?: string; highlightIndex?: number }) {
     setBlockOverrides((currentOverrides) => ({
       ...currentOverrides,
       [blockId]: {
@@ -544,6 +544,7 @@ export function useEditMode({
     updateCustomOption,
   };
 }
+
 
 
 

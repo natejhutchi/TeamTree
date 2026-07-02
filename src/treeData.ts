@@ -4,6 +4,7 @@ import type { BlockPositionMap, BlockZIndexMap } from "./editing/editTypes";
 export type TreeBlockOverrides = Record<string, {
   title?: string;
   bodyHtml?: string;
+  highlightIndex?: number;
 }>;
 
 export type TreePanels = {
@@ -148,9 +149,12 @@ function normalizeBlockOverrides(value: unknown): TreeBlockOverrides {
   return Object.fromEntries(
     Object.entries(value).flatMap(([blockId, override]) => {
       if (!isRecord(override)) return [];
-      const nextOverride: { title?: string; bodyHtml?: string } = {};
+      const nextOverride: { title?: string; bodyHtml?: string; highlightIndex?: number } = {};
       if (typeof override.title === "string") nextOverride.title = override.title;
       if (typeof override.bodyHtml === "string") nextOverride.bodyHtml = override.bodyHtml;
+      if (typeof override.highlightIndex === "number" && Number.isFinite(override.highlightIndex)) {
+        nextOverride.highlightIndex = Math.max(0, Math.floor(override.highlightIndex));
+      }
       return Object.keys(nextOverride).length ? [[blockId, nextOverride]] : [];
     }),
   );
@@ -179,6 +183,8 @@ export function normalizeTreeData(value: unknown): TeamTreeData {
     blockOverrides: normalizeBlockOverrides(value.blockOverrides),
   };
 }
+
+
 
 
 

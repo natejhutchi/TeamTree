@@ -24,7 +24,7 @@ export type EditAction =
       type: "delete-block";
       id: string;
       customBlock?: DialogueBlock;
-      override?: { title?: string; bodyHtml?: string };
+      override?: { title?: string; bodyHtml?: string; highlightIndex?: number };
       position?: { x: number; y: number };
       zIndex?: number;
       wasAbsolute?: boolean;
@@ -35,8 +35,9 @@ export type EditAction =
       customBlock: DialogueBlock;
       position: { x: number; y: number };
       zIndex: number;
-      override?: { title?: string; bodyHtml?: string };
+      override?: { title?: string; bodyHtml?: string; highlightIndex?: number };
       wasAbsolute?: boolean;
     };
+
 
 

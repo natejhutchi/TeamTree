@@ -98,12 +98,18 @@ export function TiptapBlockBody({
   html,
   editorClassName = "tiptap-block-editor block-body-editor",
   isFlashing = false,
+  highlightIndex = 0,
+  highlightFlashKey = 0,
+  transferButtonLabels = [],
   onChange,
   editorWrapperClassName = "tiptap-editor-shell",
 }: {
   html: string;
   editorClassName?: string;
   isFlashing?: boolean;
+  highlightIndex?: number;
+  highlightFlashKey?: number;
+  transferButtonLabels?: string[];
   onChange: (html: string) => void;
   editorWrapperClassName?: string;
 }) {
@@ -142,19 +148,35 @@ export function TiptapBlockBody({
   }, [editor, html]);
 
   useEffect(() => {
-    if (!editor || !isFlashing) {
-      return;
+    if (!editor || highlightFlashKey === 0) {
+      return undefined;
     }
 
-    const firstBodyElement = editor.view.dom.firstElementChild as HTMLElement | null;
-    if (!firstBodyElement) {
-      return;
-    }
+    const flashTarget = () => {
+      const transferButtonLabelSet = new Set(transferButtonLabels);
+      const highlightableElements = Array.from(editor.view.dom.children).filter((element): element is HTMLElement => {
+        if (!(element instanceof HTMLElement)) return false;
+        const text = (element.textContent ?? "").replace(/\u00a0/g, " ").trim();
+        if (!text) return false;
+        if (transferButtonLabelSet.has(text)) return false;
+        return element.matches("p, h1, h2, h3, h4, h5, h6, ul, ol, div");
+      });
+      const selectedIndex = highlightableElements.length > 0 ? Math.max(0, Math.floor(highlightIndex)) % highlightableElements.length : 0;
+      const targetElement = highlightableElements[selectedIndex];
 
-    firstBodyElement.classList.remove("is-flashing");
-    void firstBodyElement.offsetWidth;
-    firstBodyElement.classList.add("is-flashing");
-  }, [editor, isFlashing]);
+      if (!targetElement) {
+        return;
+      }
+
+      targetElement.classList.remove("is-flashing");
+      void targetElement.offsetWidth;
+      targetElement.classList.add("is-flashing");
+    };
+
+    flashTarget();
+    const timeoutId = window.setTimeout(flashTarget, 50);
+    return () => window.clearTimeout(timeoutId);
+  }, [editor, highlightFlashKey, highlightIndex, transferButtonLabels]);
 
   useEffect(() => {
     if (!editor) {
@@ -246,6 +268,10 @@ export function TiptapBlockBody({
 
   return <EditorContent className={editorWrapperClassName} editor={editor} data-text-key="tiptap-body" />;
 }
+
+
+
+
 
 
 
